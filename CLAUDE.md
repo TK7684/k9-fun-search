@@ -24,11 +24,19 @@ The app is **dog-centric, not team-centric**. Each dog has its own scores and ha
 python3 -m http.server 8000
 # Then open http://localhost:8000
 
-# Alternative port
-python3 -m http.server 3000
+# Deploy to Vercel (production)
+vercel --yes --prod
+
+# Deploy to Vercel (preview)
+vercel --yes
 ```
 
 **No build, test, or lint commands exist** - this is a static web app with no compilation step.
+
+**Deployment:**
+- Hosted on Vercel: https://k9-fun-search.vercel.app
+- GitHub repo: https://github.com/TK7684/k9-fun-search
+- Auto-deploys on push to main branch
 
 ## Architecture
 
@@ -62,31 +70,45 @@ The application manages **two** main data structures stored in LocalStorage:
 
 ### Layout Structure
 
-**Single-page scrolling app** - NOT tab-based:
+**Hybrid tab-based and scrolling app:**
 
-1. **Scoring Section** (`#scoring-section`): Always visible at top
+**Desktop Navigation (Top):**
+- Tab-based navigation for Register (ลงทะเบียน) and Judge (คิดคะแนน)
+- Leaderboard (ตารางคะแนน) scrolls to `.dashboard-section`
+- Settings (ตั้งค่า) opens modal via `toggleSettings()`
+
+**Mobile Navigation (Bottom - <768px):**
+- Fixed bottom navigation bar with 4 buttons
+- Same functions as desktop navigation
+- Visible only on mobile screens
+
+**Tab Sections:**
+
+1. **Register Tab** (`#register-tab`): Registration form
+   - Form to register new dogs (dogName, dogBreed, handlerName)
+   - List of registered dogs as cards
+   - Delete buttons for each dog
+
+2. **Judge Tab** (`#judge-tab`): Scoring interface
    - Dog selector dropdown (populated from registered dogs)
-   - Timer controls
+   - Timer controls (start/pause/reset)
    - VP scoring cards with toggle switches
    - Attire and bonus checklists
    - Live score display (updates in real-time)
    - Save/Cancel buttons
 
-2. **Dashboard Section** (`.dashboard-section`): Leaderboard
+3. **Dashboard Section** (`.dashboard-section`): Leaderboard
+   - NOT a tab - accessed via `scrollToLeaderboard()`
    - Shows all dogs with their scores
    - Sorted by total score (descending), then time (ascending)
-   - Edit/delete buttons
+   - Edit/delete buttons for each score
    - Export CSV button
 
-3. **Registration Section** (`.registration-section`): Collapsible
-   - Click header to expand/collapse
-   - Form to register new dogs
-   - List of registered dogs
-   - Hidden by default (collapsed state)
-
-4. **Settings Modal** (`#settings-modal`): Opens in modal window
-   - Click ⚙️ button in header to open
+4. **Settings Modal** (`#settings-modal`): Settings interface
+   - NOT a tab - accessed via `toggleSettings()`
+   - Opens in modal overlay
    - All scoring configuration options
+   - Save/Reset buttons
 
 ### Key Functions
 
@@ -127,6 +149,8 @@ The application manages **two** main data structures stored in LocalStorage:
 - Triggered by clicking 🎮 button in header
 
 **UI Utilities:**
+- `showTab(tabName)`: Switches between register and judge tabs (NOT for leaderboard/settings)
+- `scrollToLeaderboard()`: Smoothly scrolls to dashboard section and refreshes it
 - `toggleRegistration()`: Expands/collapses registration section
 - `toggleSettings()`: Opens/closes settings modal
 - `showToast(message, type)`: Displays notification (slides in, auto-dismisses after 3s)
@@ -156,6 +180,27 @@ The application manages **two** main data structures stored in LocalStorage:
 - All attire checkboxes
 - All bonus checkboxes
 This ensures score updates **instantly** on any user interaction.
+
+### Navigation Pattern
+
+The app uses a **hybrid navigation system**:
+
+**Tab-Based Navigation:**
+- `showTab('register')` → Shows registration form
+- `showTab('judge')` → Shows scoring interface
+- These use CSS class manipulation (`.tab-section.active`)
+- Desktop: Top navigation buttons
+- Mobile: Bottom navigation buttons
+
+**Non-Tab Navigation:**
+- `scrollToLeaderboard()` → Smooth scroll to `.dashboard-section`
+- `toggleSettings()` → Opens/closes `#settings-modal`
+- These don't use tab switching
+
+**When Adding New Navigation:**
+- If it's a full-screen view: Create a new tab section and use `showTab()`
+- If it's a section on the page: Use `scrollToSection()` function
+- If it's a modal/popup: Use `toggleModal()` function
 
 ### Important UI Patterns
 
@@ -298,5 +343,6 @@ To switch from LocalStorage:
 3. **Hard Refresh Required**: Browser cache may serve old JavaScript - always use Ctrl+Shift+R after changes
 4. **localStorage Keys**: Use `k9_dogs` NOT `k9_teams` - old key name may still exist in code comments
 5. **Function Name Updates**: Many functions renamed from "team" to "dog" - ensure all references updated
-6. **No Tab Navigation**: App is now single-page scrolling - `showTab()` function was removed
-7. **Settings in Modal**: Settings is now a modal, not a tab - accessed via toggleSettings()
+6. **Hybrid Navigation**: App uses `showTab()` for register/judge tabs, `scrollToLeaderboard()` for leaderboard, `toggleSettings()` for settings modal
+7. **Mobile Bottom Nav**: Visible only on screens <768px via CSS media query, not JavaScript
+8. **Leaderboard Not a Tab**: Leaderboard is in `.dashboard-section`, not a tab section - must use `scrollToLeaderboard()` not `showTab('leaderboard')`
