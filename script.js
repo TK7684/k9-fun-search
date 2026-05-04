@@ -259,17 +259,6 @@ function startConfetti() {
 // ============================================
 // TOGGLE FUNCTIONS
 // ============================================
-function toggleRegistration() {
-    var content = document.getElementById('registration-content');
-    var icon = document.querySelector('.collapse-icon');
-    if (content.style.display === 'none') {
-        content.style.display = 'block';
-        icon.textContent = '▲';
-    } else {
-        content.style.display = 'none';
-        icon.textContent = '▼';
-    }
-}
 
 function toggleSettings() {
     var modal = document.getElementById('settings-modal');
@@ -572,7 +561,7 @@ function calculateLiveScore() {
     if (document.getElementById('bonus-vp1-1min').checked) bonusScore += settings.bonusVp1;
     if (document.getElementById('bonus-vp2-2min').checked) bonusScore += settings.bonusVp2;
     if (document.getElementById('bonus-all-3min').checked) bonusScore += settings.bonusAll;
-    if (document.getElementById('bonus-down').checked) bonusScore += settings.bonusDown;
+    if (document.getElementById('bonus-down-check').checked) bonusScore += settings.bonusDown;
 
     var totalScore = vpScore + attireScore + bonusScore;
     document.getElementById('vp-score-live').textContent = vpScore.toFixed(1);
@@ -696,7 +685,7 @@ function resetScoringForm() {
     document.getElementById('bonus-vp1-1min').checked = false;
     document.getElementById('bonus-vp2-2min').checked = false;
     document.getElementById('bonus-all-3min').checked = false;
-    document.getElementById('bonus-down').checked = false;
+    document.getElementById('bonus-down-check').checked = false;
 
     document.getElementById('judge-notes').value = '';
 
