@@ -3,9 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐕 Fun Search by United SAR K9</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Fun Search by United SAR K9</title>
+    <meta name="description" content="ระบบคิดคะแนนการแข่งขันสุนัขค้นหาและกู้ภัย">
+    <meta name="theme-color" content="#6366f1" id="theme-color-meta">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐕</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐕</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="confetti-container" id="confetti"></div>
@@ -21,38 +30,50 @@
                         <p class="subtitle">by United SAR K9</p>
                     </div>
                 </div>
-                <div class="header-stats">
-                    <div class="stat-card">
-                        <span class="stat-icon">🏆</span>
-                        <div class="stat-info">
-                            <span class="stat-number" id="total-teams">0</span>
-                            <span class="stat-label">สุนัข</span>
+                <div class="header-right">
+                    <div class="header-stats">
+                        <div class="stat-card">
+                            <span class="stat-icon">🐕</span>
+                            <div class="stat-info">
+                                <span class="stat-number" id="total-teams">0</span>
+                                <span class="stat-label">สุนัข</span>
+                            </div>
+                        </div>
+                        <div class="stat-card stat-scored">
+                            <span class="stat-icon">✅</span>
+                            <div class="stat-info">
+                                <span class="stat-number" id="completed-teams">0</span>
+                                <span class="stat-label">เสร็จสิ้น</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="stat-card">
-                        <span class="stat-icon">✅</span>
-                        <div class="stat-info">
-                            <span class="stat-number" id="completed-teams">0</span>
-                            <span class="stat-label">เสร็จสิ้น</span>
-                        </div>
+                    <div class="header-buttons">
+                        <button class="icon-btn-round" id="dark-mode-toggle" title="โหมดมืด" aria-label="สลับโหมดมืด">
+                            <span id="dark-mode-icon">🌙</span>
+                        </button>
+                        <button class="icon-btn-round" onclick="loadDemoData()" title="ข้อมูลสาธิต" aria-label="โหลดข้อมูลสาธิต">
+                            🎮
+                        </button>
+                        <button class="icon-btn-round" onclick="toggleSettings()" title="ตั้งค่า" aria-label="ตั้งค่า">
+                            ⚙️
+                        </button>
                     </div>
-                    <button class="demo-btn" onclick="loadDemoData()" title="โหลดข้อมูลสาธิต">
-                        <span>🎮</span>
-                    </button>
-                    <button class="action-btn-small" onclick="toggleSettings()" title="ตั้งค่า">
-                        <span>⚙️</span>
-                    </button>
                 </div>
+            </div>
+            <!-- Progress Bar -->
+            <div class="progress-bar-container" id="progress-bar">
+                <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
+                <span class="progress-bar-text" id="progress-text">0/20 สุนัข</span>
             </div>
         </header>
 
-        <!-- Tab Navigation -->
-        <div class="quick-actions">
-            <button class="action-btn" data-action="register" onclick="showTab('register')">
+        <!-- Desktop Navigation -->
+        <nav class="quick-actions" role="tablist" aria-label="เมนูหลัก">
+            <button class="action-btn active" data-action="register" onclick="showTab('register')" role="tab" aria-selected="true">
                 <span class="btn-icon">➕</span>
                 <span class="btn-text">ลงทะเบียน</span>
             </button>
-            <button class="action-btn" data-action="judge" onclick="showTab('judge')">
+            <button class="action-btn" data-action="judge" onclick="showTab('judge')" role="tab" aria-selected="false">
                 <span class="btn-icon">📝</span>
                 <span class="btn-text">คิดคะแนน</span>
             </button>
@@ -60,16 +81,12 @@
                 <span class="btn-icon">🏆</span>
                 <span class="btn-text">ตารางคะแนน</span>
             </button>
-            <button class="action-btn" data-action="settings" onclick="toggleSettings()">
-                <span class="btn-icon">⚙️</span>
-                <span class="btn-text">ตั้งค่า</span>
-            </button>
-        </div>
+        </nav>
 
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Register Tab -->
-            <section id="register-tab" class="tab-section active">
+            <!-- ========== REGISTER TAB ========== -->
+            <section id="register-tab" class="tab-section active" role="tabpanel">
                 <div class="section-header">
                     <h2>📋 ลงทะเบียนสุนัข</h2>
                     <p class="section-desc">ลงทะเบียนสุนัขและผู้ควบคุม (สูงสุด 20 สุนัข)</p>
@@ -80,20 +97,18 @@
                         <h3>เพิ่มสุนัขใหม่</h3>
                         <form id="registration-form">
                             <div class="input-group">
-                                <label>🐕 ชื่อสุนัข</label>
-                                <input type="text" id="dog-name" placeholder="เช่น: มอลลี่" required>
+                                <label for="dog-name">🐕 ชื่อสุนัข</label>
+                                <input type="text" id="dog-name" placeholder="เช่น: มอลลี่" required autocomplete="off">
                             </div>
                             <div class="input-group">
-                                <label>🦮 สายพันธุ์</label>
-                                <input type="text" id="dog-breed" placeholder="เช่น: เยอรมัน เชเพิร์ด" required>
+                                <label for="dog-breed">🦮 สายพันธุ์</label>
+                                <input type="text" id="dog-breed" placeholder="เช่น: เยอรมัน เชเพิร์ด" required autocomplete="off">
                             </div>
                             <div class="input-group">
-                                <label>👤 ชื่อผู้ควบคุม (Handler)</label>
-                                <input type="text" id="handler-name" placeholder="เช่น: สมชาย ใจดี" required>
+                                <label for="handler-name">👤 ชื่อผู้ควบคุม (Handler)</label>
+                                <input type="text" id="handler-name" placeholder="เช่น: สมชาย ใจดี" required autocomplete="off">
                             </div>
-                            <button type="submit" class="submit-btn">
-                                <span>✨ ลงทะเบียน</span>
-                            </button>
+                            <button type="submit" class="submit-btn">✨ ลงทะเบียน</button>
                         </form>
                     </div>
 
@@ -104,360 +119,283 @@
                 </div>
             </section>
 
-            <!-- Judge Tab -->
-            <section id="judge-tab" class="tab-section">
+            <!-- ========== JUDGE TAB ========== -->
+            <section id="judge-tab" class="tab-section" role="tabpanel">
                 <div class="section-header">
                     <h2>📝 คิดคะแนน</h2>
                     <p class="section-desc">เลือกสุนัขและเริ่มประเมินผล</p>
                 </div>
 
-                <div class="judge-content" id="judge-content">
-                    <div class="team-selector-card">
-                        <label class="selector-label">เลือกสุนัขที่จะประเมิน:</label>
-                        <select id="team-select" class="team-select">
-                            <option value="">-- เลือกสุนัข --</option>
-                        </select>
-                    </div>
-
-                    <div id="judging-panel" style="display: none;" id="judging-panel">
-                <div class="section-header">
-                    <h2>📝 คิดคะแนนสุนัข</h2>
-                    <p class="section-desc">เลือกสุนัขและเริ่มประเมินผล</p>
+                <div class="team-selector-card">
+                    <label class="selector-label" for="team-select">เลือกสุนัขที่จะประเมิน:</label>
+                    <select id="team-select" class="team-select">
+                        <option value="">-- เลือกสุนัข --</option>
+                    </select>
                 </div>
 
-                <div class="judge-content">
-                    <div class="team-selector-card">
-                        <label class="selector-label">เลือกสุนัขที่จะประเมิน:</label>
-                        <select id="team-select" class="team-select">
-                            <option value="">-- เลือกสุนัข --</option>
-                        </select>
+                <div id="judging-panel" style="display: none;">
+                    <!-- Sticky Live Score Bar -->
+                    <div class="sticky-score-bar" id="sticky-bar">
+                        <div class="sticky-score-info">
+                            <span class="sticky-label">คะแนนรวม</span>
+                            <span class="sticky-score-value" id="sticky-total-score">0</span>
+                        </div>
+                        <div class="sticky-score-breakdown">
+                            <span class="breakdown-item">
+                                <span class="breakdown-icon">🎯</span>
+                                <span id="sticky-vp-score">0</span>
+                            </span>
+                            <span class="breakdown-item">
+                                <span class="breakdown-icon">👕</span>
+                                <span id="sticky-attire-score">10</span>
+                            </span>
+                            <span class="breakdown-item">
+                                <span class="breakdown-icon">🎁</span>
+                                <span id="sticky-bonus-score">0</span>
+                            </span>
+                        </div>
                     </div>
 
-                    <div id="judging-panel" style="display: none;">
-                        <!-- Sticky Live Score Bar -->
-                        <div class="sticky-score-bar">
-                            <div class="sticky-score-info">
-                                <span class="sticky-label">คะแนนรวม</span>
-                                <span class="sticky-score-value" id="sticky-total-score">0</span>
-                            </div>
-                            <div class="sticky-score-breakdown">
-                                <span class="breakdown-item">
-                                    <span class="breakdown-icon">🎯</span>
-                                    <span id="sticky-vp-score">0</span>
-                                </span>
-                                <span class="breakdown-item">
-                                    <span class="breakdown-icon">👕</span>
-                                    <span id="sticky-attire-score">10</span>
-                                </span>
-                                <span class="breakdown-item">
-                                    <span class="breakdown-icon">🎁</span>
-                                    <span id="sticky-bonus-score">0</span>
-                                </span>
+                    <!-- Timer -->
+                    <div class="timer-card">
+                        <h3>⏱️ เวลาการแข่งขัน</h3>
+                        <div class="timer-display">
+                            <div class="timer-value" id="timer-display">00:00</div>
+                            <div class="timer-controls">
+                                <button id="start-btn" class="timer-btn start-btn">▶️ เริ่ม</button>
+                                <button id="pause-btn" class="timer-btn pause-btn" disabled>⏸️ หยุด</button>
+                                <button id="reset-btn" class="timer-btn reset-btn">🔄 รีเซ็ต</button>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Timer Section -->
-                        <div class="timer-card">
-                            <h3>⏱️ เวลาการแข่งขัน</h3>
-                            <div class="timer-display">
-                                <div class="timer-value" id="timer-display">00:00</div>
-                                <div class="timer-controls">
-                                    <button id="start-btn" class="timer-btn start-btn">▶️ เริ่ม</button>
-                                    <button id="pause-btn" class="timer-btn pause-btn" disabled>⏸️ หยุดชั่วคราว</button>
-                                    <button id="reset-btn" class="timer-btn reset-btn">🔄 รีเซ็ต</button>
+                    <!-- VP Scoring -->
+                    <div class="vp-scoring-card">
+                        <h3>🎯 คะแนนผู้ประสบภัย (VP)</h3>
+                        <div class="vp-grid">
+                            <div class="vp-item easy-vp">
+                                <div class="vp-header">
+                                    <span class="vp-badge easy">VP1 ง่าย</span>
+                                    <span class="vp-points" id="vp1-points-display">20 คะแนน</span>
+                                </div>
+                                <p class="vp-desc">นั่ง/นอนบนพื้น มองเห็นและเข้าถึงได้</p>
+                                <div class="vp-controls">
+                                    <label class="toggle-label">
+                                        <input type="checkbox" class="vp-found" data-vp="1">
+                                        <span class="toggle-slider"></span>
+                                        <span>พบแล้ว</span>
+                                    </label>
+                                    <select class="grade-select" data-vp="1">
+                                        <option value="V">V ⭐⭐⭐⭐⭐</option>
+                                        <option value="SG">SG ⭐⭐⭐⭐</option>
+                                        <option value="G">G ⭐⭐⭐</option>
+                                        <option value="B">B ⭐⭐</option>
+                                        <option value="M">M ⭐</option>
+                                    </select>
                                 </div>
                             </div>
-                        </div>
 
-                        <!-- VP Scoring -->
-                        <div class="vp-scoring-card">
-                            <h3>🎯 คะแนนผู้ประสบภัย (VP)</h3>
-                            <div class="vp-grid">
-                                <!-- VP1 -->
-                                <div class="vp-item easy-vp">
-                                    <div class="vp-header">
-                                        <span class="vp-badge easy">VP1 ง่าย</span>
-                                        <span class="vp-points">20 คะแนน</span>
-                                    </div>
-                                    <p class="vp-desc">นั่ง/นอนบนพื้น มองเห็นและเข้าถึงได้</p>
-                                    <div class="vp-controls">
-                                        <label class="toggle-label">
-                                            <input type="checkbox" class="vp-found" data-vp="1">
-                                            <span class="toggle-slider"></span>
-                                            <span>พบแล้ว</span>
-                                        </label>
-                                        <div class="vp-grade-select">
-                                            <select class="grade-select" data-vp="1">
-                                                <option value="V">V ⭐⭐⭐⭐⭐</option>
-                                                <option value="SG">SG ⭐⭐⭐⭐</option>
-                                                <option value="G">G ⭐⭐⭐</option>
-                                                <option value="B">B ⭐⭐</option>
-                                                <option value="M">M ⭐</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                            <div class="vp-item medium-vp">
+                                <div class="vp-header">
+                                    <span class="vp-badge medium">VP2 กลาง</span>
+                                    <span class="vp-points" id="vp2-points-display">30 คะแนน</span>
                                 </div>
-
-                                <!-- VP2 -->
-                                <div class="vp-item medium-vp">
-                                    <div class="vp-header">
-                                        <span class="vp-badge medium">VP2 กลาง</span>
-                                        <span class="vp-points">30 คะแนน</span>
-                                    </div>
-                                    <p class="vp-desc">อยู่สูงกว่าพื้น (ต้นไม้, ก้อนหิน)</p>
-                                    <div class="vp-controls">
-                                        <label class="toggle-label">
-                                            <input type="checkbox" class="vp-found" data-vp="2">
-                                            <span class="toggle-slider"></span>
-                                            <span>พบแล้ว</span>
-                                        </label>
-                                        <div class="vp-grade-select">
-                                            <select class="grade-select" data-vp="2">
-                                                <option value="V">V ⭐⭐⭐⭐⭐</option>
-                                                <option value="SG">SG ⭐⭐⭐⭐</option>
-                                                <option value="G">G ⭐⭐⭐</option>
-                                                <option value="B">B ⭐⭐</option>
-                                                <option value="M">M ⭐</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                                <p class="vp-desc">อยู่สูงกว่าพื้น (ต้นไม้, ก้อนหิน)</p>
+                                <div class="vp-controls">
+                                    <label class="toggle-label">
+                                        <input type="checkbox" class="vp-found" data-vp="2">
+                                        <span class="toggle-slider"></span>
+                                        <span>พบแล้ว</span>
+                                    </label>
+                                    <select class="grade-select" data-vp="2">
+                                        <option value="V">V ⭐⭐⭐⭐⭐</option>
+                                        <option value="SG">SG ⭐⭐⭐⭐</option>
+                                        <option value="G">G ⭐⭐⭐</option>
+                                        <option value="B">B ⭐⭐</option>
+                                        <option value="M">M ⭐</option>
+                                    </select>
                                 </div>
+                            </div>
 
-                                <!-- VP3 -->
-                                <div class="vp-item hard-vp">
-                                    <div class="vp-header">
-                                        <span class="vp-badge hard">VP3 ยาก</span>
-                                        <span class="vp-points">40 คะแนน</span>
-                                    </div>
-                                    <p class="vp-desc">ซ่อนในที่ปิดสนิท</p>
-                                    <div class="vp-controls">
-                                        <label class="toggle-label">
-                                            <input type="checkbox" class="vp-found" data-vp="3">
-                                            <span class="toggle-slider"></span>
-                                            <span>พบแล้ว</span>
-                                        </label>
-                                        <div class="vp-grade-select">
-                                            <select class="grade-select" data-vp="3">
-                                                <option value="V">V ⭐⭐⭐⭐⭐</option>
-                                                <option value="SG">SG ⭐⭐⭐⭐</option>
-                                                <option value="G">G ⭐⭐⭐</option>
-                                                <option value="B">B ⭐⭐</option>
-                                                <option value="M">M ⭐</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                            <div class="vp-item hard-vp">
+                                <div class="vp-header">
+                                    <span class="vp-badge hard">VP3 ยาก</span>
+                                    <span class="vp-points" id="vp3-points-display">40 คะแนน</span>
+                                </div>
+                                <p class="vp-desc">ซ่อนในที่ปิดสนิท</p>
+                                <div class="vp-controls">
+                                    <label class="toggle-label">
+                                        <input type="checkbox" class="vp-found" data-vp="3">
+                                        <span class="toggle-slider"></span>
+                                        <span>พบแล้ว</span>
+                                    </label>
+                                    <select class="grade-select" data-vp="3">
+                                        <option value="V">V ⭐⭐⭐⭐⭐</option>
+                                        <option value="SG">SG ⭐⭐⭐⭐</option>
+                                        <option value="G">G ⭐⭐⭐</option>
+                                        <option value="B">B ⭐⭐</option>
+                                        <option value="M">M ⭐</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Quick Checklist -->
-                        <div class="quick-checklist-card">
-                            <h3>✅ คะแนนเพิ่มเติม</h3>
-                            <div class="checklist-grid">
-                                <div class="checklist-section">
-                                    <h4>👕 การแต่งกาย (10 คะแนน)</h4>
-                                    <div class="checklist-items">
-                                        <label class="checklist-item required">
-                                            <input type="checkbox" id="attire-shoes" checked>
-                                            <span>รองเท้าเดินป่า</span>
-                                            <span class="points-badge">+2</span>
-                                        </label>
-                                        <label class="checklist-item required">
-                                            <input type="checkbox" id="attire-shirt" checked>
-                                            <span>เสื้อแขนยาว</span>
-                                            <span class="points-badge">+2</span>
-                                        </label>
-                                        <label class="checklist-item required">
-                                            <input type="checkbox" id="attire-pants" checked>
-                                            <span>กางเกงขายาว</span>
-                                            <span class="points-badge">+2</span>
-                                        </label>
-                                        <label class="checklist-item bonus">
-                                            <input type="checkbox" id="attire-hat">
-                                            <span>หมวก</span>
-                                            <span class="points-badge bonus">+2</span>
-                                        </label>
-                                        <label class="checklist-item bonus">
-                                            <input type="checkbox" id="attire-gloves">
-                                            <span>ถุงมือ</span>
-                                            <span class="points-badge bonus">+2</span>
-                                        </label>
-                                    </div>
+                    <!-- Quick Checklist -->
+                    <div class="quick-checklist-card">
+                        <h3>✅ คะแนนเพิ่มเติม</h3>
+                        <div class="checklist-grid">
+                            <div class="checklist-section">
+                                <h4>👕 การแต่งกาย (<span id="attire-max-display">10</span> คะแนน)</h4>
+                                <div class="checklist-items">
+                                    <label class="checklist-item">
+                                        <input type="checkbox" id="attire-shoes" checked>
+                                        <span>รองเท้าเดินป่า</span>
+                                        <span class="points-badge" id="attire-shoes-pts">+2</span>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" id="attire-shirt" checked>
+                                        <span>เสื้อแขนยาว</span>
+                                        <span class="points-badge" id="attire-shirt-pts">+2</span>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" id="attire-pants" checked>
+                                        <span>กางเกงขายาว</span>
+                                        <span class="points-badge" id="attire-pants-pts">+2</span>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" id="attire-hat">
+                                        <span>หมวก</span>
+                                        <span class="points-badge bonus" id="attire-hat-pts">+2</span>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" id="attire-gloves">
+                                        <span>ถุงมือ</span>
+                                        <span class="points-badge bonus" id="attire-gloves-pts">+2</span>
+                                    </label>
                                 </div>
-
-                                <div class="checklist-section">
-                                    <h4>🎁 โบนัสพิเศษ (35 คะแนน)</h4>
-                                    <div class="checklist-items">
-                                        <label class="checklist-item bonus-item">
-                                            <input type="checkbox" id="bonus-vp1-1min">
-                                            <span>หา VP1 ใน 1 นาที</span>
-                                            <span class="points-badge bonus">+10</span>
-                                        </label>
-                                        <label class="checklist-item bonus-item">
-                                            <input type="checkbox" id="bonus-vp2-2min">
-                                            <span>หา VP2 ใน 2 นาที</span>
-                                            <span class="points-badge bonus">+10</span>
-                                        </label>
-                                        <label class="checklist-item bonus-item">
-                                            <input type="checkbox" id="bonus-all-3min">
-                                            <span>หาครบ 3 VP ใน 3 นาที</span>
-                                            <span class="points-badge bonus">+10</span>
-                                        </label>
-                                        <label class="checklist-item bonus-item">
-                                            <input type="checkbox" id="bonus-down">
-                                            <span>สั่งหมอบรอได้</span>
-                                            <span class="points-badge bonus">+5</span>
-                                        </label>
-                                    </div>
+                            </div>
+                            <div class="checklist-section">
+                                <h4>🎁 โบนัสพิเศษ</h4>
+                                <div class="checklist-items">
+                                    <label class="checklist-item">
+                                        <input type="checkbox" id="bonus-vp1-1min">
+                                        <span>หา VP1 ใน 1 นาที</span>
+                                        <span class="points-badge bonus" id="bonus-vp1-pts">+10</span>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" id="bonus-vp2-2min">
+                                        <span>หา VP2 ใน 2 นาที</span>
+                                        <span class="points-badge bonus" id="bonus-vp2-pts">+10</span>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" id="bonus-all-3min">
+                                        <span>หาครบ 3 VP ใน 3 นาที</span>
+                                        <span class="points-badge bonus" id="bonus-all-pts">+10</span>
+                                    </label>
+                                    <label class="checklist-item">
+                                        <input type="checkbox" id="bonus-down">
+                                        <span>สั่งหมอบรอได้</span>
+                                        <span class="points-badge bonus" id="bonus-down-pts">+5</span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Live Score -->
-                        <div class="live-score-card">
-                            <h3>📊 คะแนนสด</h3>
-                            <div class="score-grid">
-                                <div class="score-item vp-score">
-                                    <span class="score-label">ผู้ประสบภัย</span>
-                                    <span class="score-value" id="vp-score-live">0</span>
-                                </div>
-                                <div class="score-item attire-score">
-                                    <span class="score-label">การแต่งกาย</span>
-                                    <span class="score-value" id="attire-score-live">10</span>
-                                </div>
-                                <div class="score-item bonus-score">
-                                    <span class="score-label">โบนัส</span>
-                                    <span class="score-value" id="bonus-score-live">0</span>
-                                </div>
-                                <div class="score-item total-score">
-                                    <span class="score-label">รวมทั้งหมด</span>
-                                    <span class="score-value total" id="total-score-live">10</span>
-                                </div>
+                    <!-- Live Score -->
+                    <div class="live-score-card">
+                        <h3>📊 คะแนนสด</h3>
+                        <div class="score-grid">
+                            <div class="score-item">
+                                <span class="score-label">ผู้ประสบภัย</span>
+                                <span class="score-value" id="vp-score-live">0</span>
+                            </div>
+                            <div class="score-item">
+                                <span class="score-label">การแต่งกาย</span>
+                                <span class="score-value" id="attire-score-live">10</span>
+                            </div>
+                            <div class="score-item">
+                                <span class="score-label">โบนัส</span>
+                                <span class="score-value" id="bonus-score-live">0</span>
+                            </div>
+                            <div class="score-item">
+                                <span class="score-label">รวมทั้งหมด</span>
+                                <span class="score-value total" id="total-score-live">10</span>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Notes -->
-                        <div class="notes-card">
-                            <h3>📝 หมายเหตุ</h3>
-                            <textarea id="judge-notes" placeholder="บันทึกเพิ่มเติม..."></textarea>
-                        </div>
+                    <!-- Notes -->
+                    <div class="notes-card">
+                        <h3>📝 หมายเหตุ</h3>
+                        <textarea id="judge-notes" placeholder="บันทึกเพิ่มเติม..." rows="3"></textarea>
+                    </div>
 
-                        <!-- Actions -->
-                        <div class="action-buttons">
-                            <button id="save-score-btn" class="action-btn-save">
-                                <span>💾 บันทึกคะแนน</span>
-                            </button>
-                            <button id="cancel-btn" class="action-btn-cancel">
-                                <span>❌ ยกเลิก</span>
-                            </button>
-                        </div>
+                    <!-- Actions -->
+                    <div class="action-buttons">
+                        <button id="save-score-btn" class="action-btn-save">💾 บันทึกคะแนน</button>
+                        <button id="cancel-btn" class="action-btn-cancel">❌ ยกเลิก</button>
                     </div>
                 </div>
             </section>
 
-            <!-- DOG DASHBOARD - Shows all dogs with scores -->
-            <section class="dashboard-section">
+            <!-- ========== LEADERBOARD (always visible) ========== -->
+            <section class="dashboard-section" id="dashboard">
                 <div class="section-header">
                     <h2>🏆 ตารางคะแนนสุนัข</h2>
                     <p class="section-desc">ดูอันดับและคะแนนของสุนัขทั้งหมด</p>
                 </div>
 
                 <div class="leaderboard-actions">
-                    <button class="icon-btn" onclick="exportCSV()">
-                        <span>📥</span> ส่งออก CSV
-                    </button>
-                    <button class="icon-btn danger" onclick="confirmClearAll()">
-                        <span>🗑️</span> ล้างข้อมูล
-                    </button>
+                    <button class="icon-btn" onclick="exportCSV()">📥 ส่งออก CSV</button>
+                    <button class="icon-btn danger" onclick="confirmClearAll()">🗑️ ล้างข้อมูล</button>
                 </div>
 
                 <div class="leaderboard-table">
                     <div id="leaderboard-content"></div>
                 </div>
             </section>
-
-            <!-- REGISTRATION - Collapsible -->
-            <section class="registration-section">
-                <div class="section-header clickable" onclick="toggleRegistration()">
-                    <h2>📋 ลงทะเบียนสุนัข <span class="collapse-icon">▼</span></h2>
-                    <p class="section-desc">คลิกเพื่อแสดง/ซ่อน ฟอร์มลงทะเบียน</p>
-                </div>
-
-                <div id="registration-content" style="display: none;">
-                    <div class="content-grid">
-                        <div class="form-card">
-                            <h3>เพิ่มสุนัขใหม่</h3>
-                            <form id="registration-form">
-                                <div class="input-group">
-                                    <label>🐕 ชื่อสุนัข</label>
-                                    <input type="text" id="dog-name" placeholder="เช่น: มอลลี่" required>
-                                </div>
-                                <div class="input-group">
-                                    <label>🦮 สายพันธุ์</label>
-                                    <input type="text" id="dog-breed" placeholder="เช่น: เยอรมัน เชเพิร์ด" required>
-                                </div>
-                                <div class="input-group">
-                                    <label>👤 ชื่อผู้ควบคุม (Handler)</label>
-                                    <input type="text" id="handler-name" placeholder="เช่น: สมชาย ใจดี" required>
-                                </div>
-                                <button type="submit" class="submit-btn">
-                                    <span>✨ ลงทะเบียน</span>
-                                </button>
-                            </form>
-                        </div>
-
-                        <div class="teams-list-card">
-                            <h3>รายชื่อสุนัข (<span id="team-count">0</span>/20)</h3>
-                            <div id="teams-container" class="teams-container"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
         </main>
 
         <!-- Edit Score Modal -->
-        <div id="edit-modal" class="modal">
+        <div id="edit-modal" class="modal" role="dialog" aria-modal="true" aria-label="แก้ไขคะแนน">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>✏️ แก้ไขคะแนน</h3>
-                    <button class="close-btn" onclick="closeEditModal()">×</button>
+                    <button class="close-btn" onclick="closeEditModal()" aria-label="ปิด">×</button>
                 </div>
                 <div class="modal-body" id="edit-modal-body"></div>
                 <div class="modal-footer">
-                    <button class="action-btn-save" onclick="saveEditedScore()">
-                        <span>💾 บันทึก</span>
-                    </button>
-                    <button class="action-btn-cancel" onclick="closeEditModal()">
-                        <span>❌ ยกเลิก</span>
-                    </button>
+                    <button class="action-btn-save" onclick="saveEditedScore()">💾 บันทึก</button>
+                    <button class="action-btn-cancel" onclick="closeEditModal()">❌ ยกเลิก</button>
                 </div>
             </div>
         </div>
 
         <!-- Settings Modal -->
-        <div id="settings-modal" class="modal">
+        <div id="settings-modal" class="modal" role="dialog" aria-modal="true" aria-label="ตั้งค่า">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3>⚙️ ตั้งค่าการแข่งขัน</h3>
-                    <button class="close-btn" onclick="toggleSettings()">×</button>
+                    <button class="close-btn" onclick="toggleSettings()" aria-label="ปิด">×</button>
                 </div>
                 <div class="modal-body">
                     <div class="settings-grid">
                         <div class="setting-card">
                             <h3>🎯 คะแนนผู้ประสบภัย (VP)</h3>
                             <div class="setting-item">
-                                <label>VP1 (ง่าย)</label>
+                                <label for="vp1-points">VP1 (ง่าย)</label>
                                 <input type="number" id="vp1-points" value="20" min="0" max="100">
                                 <span>คะแนน</span>
                             </div>
                             <div class="setting-item">
-                                <label>VP2 (กลาง)</label>
+                                <label for="vp2-points">VP2 (กลาง)</label>
                                 <input type="number" id="vp2-points" value="30" min="0" max="100">
                                 <span>คะแนน</span>
                             </div>
                             <div class="setting-item">
-                                <label>VP3 (ยาก)</label>
+                                <label for="vp3-points">VP3 (ยาก)</label>
                                 <input type="number" id="vp3-points" value="40" min="0" max="100">
                                 <span>คะแนน</span>
                             </div>
@@ -466,27 +404,27 @@
                         <div class="setting-card">
                             <h3>⭐ เกรดการแจ้งเตือน (%)</h3>
                             <div class="setting-item">
-                                <label>V (ดีมาก)</label>
+                                <label for="grade-v">V (ดีมาก)</label>
                                 <input type="number" id="grade-v" value="100" min="0" max="100">
                                 <span>%</span>
                             </div>
                             <div class="setting-item">
-                                <label>SG (ดี)</label>
+                                <label for="grade-sg">SG (ดี)</label>
                                 <input type="number" id="grade-sg" value="92" min="0" max="100">
                                 <span>%</span>
                             </div>
                             <div class="setting-item">
-                                <label>G (ปานกลาง)</label>
+                                <label for="grade-g">G (ปานกลาง)</label>
                                 <input type="number" id="grade-g" value="84" min="0" max="100">
                                 <span>%</span>
                             </div>
                             <div class="setting-item">
-                                <label>B (น้อย)</label>
+                                <label for="grade-b">B (น้อย)</label>
                                 <input type="number" id="grade-b" value="74" min="0" max="100">
                                 <span>%</span>
                             </div>
                             <div class="setting-item">
-                                <label>M (ไม่ได้คะแนน)</label>
+                                <label for="grade-m">M (ไม่ได้คะแนน)</label>
                                 <input type="number" id="grade-m" value="0" min="0" max="100">
                                 <span>%</span>
                             </div>
@@ -495,17 +433,17 @@
                         <div class="setting-card">
                             <h3>👕 คะแนนการแต่งกาย</h3>
                             <div class="setting-item">
-                                <label>รายการบังคับ (ต่อชิ้น)</label>
+                                <label for="attire-required">รายการบังคับ (ต่อชิ้น)</label>
                                 <input type="number" id="attire-required" value="2" min="0" max="10">
                                 <span>คะแนน</span>
                             </div>
                             <div class="setting-item">
-                                <label>รายการพิเศษ (ต่อชิ้น)</label>
+                                <label for="attire-bonus">รายการพิเศษ (ต่อชิ้น)</label>
                                 <input type="number" id="attire-bonus" value="2" min="0" max="10">
                                 <span>คะแนน</span>
                             </div>
                             <div class="setting-item">
-                                <label>คะแนนเต็ม</label>
+                                <label for="attire-max">คะแนนเต็ม</label>
                                 <input type="number" id="attire-max" value="10" min="0" max="20">
                                 <span>คะแนน</span>
                             </div>
@@ -514,22 +452,22 @@
                         <div class="setting-card">
                             <h3>🎁 คะแนนโบนัส</h3>
                             <div class="setting-item">
-                                <label>VP1 ใน 1 นาที</label>
+                                <label for="bonus-vp1">VP1 ใน 1 นาที</label>
                                 <input type="number" id="bonus-vp1" value="10" min="0" max="50">
                                 <span>คะแนน</span>
                             </div>
                             <div class="setting-item">
-                                <label>VP2 ใน 2 นาที</label>
+                                <label for="bonus-vp2">VP2 ใน 2 นาที</label>
                                 <input type="number" id="bonus-vp2" value="10" min="0" max="50">
                                 <span>คะแนน</span>
                             </div>
                             <div class="setting-item">
-                                <label>ครบ 3 VP ใน 3 นาที</label>
+                                <label for="bonus-all">ครบ 3 VP ใน 3 นาที</label>
                                 <input type="number" id="bonus-all" value="10" min="0" max="50">
                                 <span>คะแนน</span>
                             </div>
                             <div class="setting-item">
-                                <label>สั่งหมอบรอได้</label>
+                                <label for="bonus-down">สั่งหมอบรอได้</label>
                                 <input type="number" id="bonus-down" value="5" min="0" max="20">
                                 <span>คะแนน</span>
                             </div>
@@ -537,38 +475,34 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="action-btn-save" onclick="saveSettings()">
-                        <span>💾 บันทึกตั้งค่า</span>
-                    </button>
-                    <button class="action-btn-cancel" onclick="resetSettings()">
-                        <span>🔄 คืนค่าเดิม</span>
-                    </button>
+                    <button class="action-btn-save" onclick="saveSettings()">💾 บันทึกตั้งค่า</button>
+                    <button class="action-btn-cancel" onclick="resetSettings()">🔄 คืนค่าเดิม</button>
                 </div>
             </div>
         </div>
 
         <!-- Mobile Bottom Navigation -->
-        <nav class="mobile-nav">
-            <button class="mobile-nav-item" onclick="showTab('register')" data-tab="register">
+        <nav class="mobile-nav" role="tablist" aria-label="เมนูมือถือ">
+            <button class="mobile-nav-item active" onclick="showTab('register')" data-tab="register" role="tab">
                 <span class="nav-icon">➕</span>
                 <span class="nav-label">ลงทะเบียน</span>
             </button>
-            <button class="mobile-nav-item" onclick="showTab('judge')" data-tab="judge">
+            <button class="mobile-nav-item" onclick="showTab('judge')" data-tab="judge" role="tab">
                 <span class="nav-icon">📝</span>
                 <span class="nav-label">คิดคะแนน</span>
             </button>
-            <button class="mobile-nav-item" onclick="scrollToLeaderboard()" data-tab="leaderboard">
+            <button class="mobile-nav-item" onclick="scrollToLeaderboard()" data-tab="leaderboard" role="tab">
                 <span class="nav-icon">🏆</span>
                 <span class="nav-label">ตาราง</span>
             </button>
-            <button class="mobile-nav-item" onclick="toggleSettings()" data-tab="settings">
+            <button class="mobile-nav-item" onclick="toggleSettings()" data-tab="settings" role="tab">
                 <span class="nav-icon">⚙️</span>
                 <span class="nav-label">ตั้งค่า</span>
             </button>
         </nav>
 
-        <!-- Toast Notification -->
-        <div id="toast" class="toast"></div>
+        <!-- Toast -->
+        <div id="toast" class="toast" role="alert" aria-live="polite"></div>
     </div>
 
     <script src="script.js"></script>

@@ -1,25 +1,46 @@
 // ============================================
+// SERVICE WORKER
+// ============================================
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+
+// ============================================
 // DATA STORAGE
 // ============================================
-let dogs = JSON.parse(localStorage.getItem('k9_dogs')) || [];
-let scores = JSON.parse(localStorage.getItem('k9_scores')) || [];
-let settings = JSON.parse(localStorage.getItem('k9_settings')) || {
-    vp1Points: 20,
-    vp2Points: 30,
-    vp3Points: 40,
-    gradeV: 100,
-    gradeSG: 92,
-    gradeG: 84,
-    gradeB: 74,
-    gradeM: 0,
-    attireRequired: 2,
-    attireBonus: 2,
-    attireMax: 10,
-    bonusVp1: 10,
-    bonusVp2: 10,
-    bonusAll: 10,
-    bonusDown: 5
-};
+function safeParse(key) {
+    try {
+        const data = JSON.parse(localStorage.getItem(key));
+        return Array.isArray(data) ? data : null;
+    } catch { return null; }
+}
+
+let dogs = safeParse('k9_dogs') || [];
+let scores = safeParse('k9_scores') || [];
+let settings = {};
+try {
+    const stored = JSON.parse(localStorage.getItem('k9_settings'));
+    settings = (stored && typeof stored === 'object' && !Array.isArray(stored)) ? stored : null;
+} catch { settings = null; }
+if (!settings) {
+    settings = {
+        vp1Points: 20,
+        vp2Points: 30,
+        vp3Points: 40,
+        gradeV: 100,
+        gradeSG: 92,
+        gradeG: 84,
+        gradeB: 74,
+        gradeM: 0,
+        attireRequired: 2,
+        attireBonus: 2,
+        attireMax: 10,
+        bonusVp1: 10,
+        bonusVp2: 10,
+        bonusAll: 10,
+        bonusDown: 5
+    };
+}
 
 // ============================================
 // DEMO DATA
@@ -66,10 +87,7 @@ function loadDemoData() {
     saveDogs();
     saveScores();
 
-    renderDogsList();
-    updateDogSelect();
-    renderLeaderboard();
-    updateHeaderStats();
+    refreshAll();
 
     showToast('โหลดข้อมูลสาธิตสำเร็จ! 🎉', 'success');
     startConfetti();
@@ -88,58 +106,125 @@ let timerRunning = false;
 let editingScoreId = null;
 
 // ============================================
+// UNDO SYSTEM
+// ============================================
+let undoTimeout = null;
+let undoData = null;
+
+// ============================================
+// DARK MODE
+// ============================================
+function initDarkMode() {
+    const saved = localStorage.getItem('k9_dark_mode');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (saved === 'true' || (!saved && prefersDark)) {
+        document.body.classList.add('dark');
+        document.getElementById('dark-mode-icon').textContent = '☀️';
+        document.getElementById('theme-color-meta').content = '#1e1b4b';
+    }
+}
+
+function toggleDarkMode() {
+    document.body.classList.toggle('dark');
+    const isDark = document.body.classList.contains('dark');
+    document.getElementById('dark-mode-icon').textContent = isDark ? '☀️' : '🌙';
+    document.getElementById('theme-color-meta').content = isDark ? '#1e1b4b' : '#6366f1';
+    localStorage.setItem('k9_dark_mode', isDark);
+}
+
+// ============================================
+// PROGRESS BAR
+// ============================================
+function updateProgressBar() {
+    const total = dogs.length;
+    const scored = scores.length;
+    const pct = total > 0 ? (scored / total) * 100 : 0;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-text').textContent = scored + '/' + total + ' สุนัข';
+}
+
+// ============================================
+// SETTINGS DISPLAY
+// ============================================
+function updateSettingsDisplay() {
+    var el = function(id) { return document.getElementById(id); };
+    if (el('vp1-points-display')) el('vp1-points-display').textContent = settings.vp1Points + ' คะแนน';
+    if (el('vp2-points-display')) el('vp2-points-display').textContent = settings.vp2Points + ' คะแนน';
+    if (el('vp3-points-display')) el('vp3-points-display').textContent = settings.vp3Points + ' คะแนน';
+    if (el('attire-max-display')) el('attire-max-display').textContent = settings.attireMax;
+    if (el('attire-shoes-pts')) el('attire-shoes-pts').textContent = '+' + settings.attireRequired;
+    if (el('attire-shirt-pts')) el('attire-shirt-pts').textContent = '+' + settings.attireRequired;
+    if (el('attire-pants-pts')) el('attire-pants-pts').textContent = '+' + settings.attireRequired;
+    if (el('attire-hat-pts')) el('attire-hat-pts').textContent = '+' + settings.attireBonus;
+    if (el('attire-gloves-pts')) el('attire-gloves-pts').textContent = '+' + settings.attireBonus;
+    if (el('bonus-vp1-pts')) el('bonus-vp1-pts').textContent = '+' + settings.bonusVp1;
+    if (el('bonus-vp2-pts')) el('bonus-vp2-pts').textContent = '+' + settings.bonusVp2;
+    if (el('bonus-all-pts')) el('bonus-all-pts').textContent = '+' + settings.bonusAll;
+    if (el('bonus-down-pts')) el('bonus-down-pts').textContent = '+' + settings.bonusDown;
+}
+
+// ============================================
+// REFRESH ALL
+// ============================================
+function refreshAll() {
+    renderDogsList();
+    updateDogSelect();
+    renderLeaderboard();
+    updateHeaderStats();
+    updateProgressBar();
+}
+
+// ============================================
 // INITIALIZE APP
 // ============================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
     startConfetti();
 });
 
 function initializeApp() {
+    initDarkMode();
     setupEventListeners();
     updateHeaderStats();
     renderDogsList();
     updateDogSelect();
     renderLeaderboard();
+    updateProgressBar();
     loadSettings();
+    updateSettingsDisplay();
 }
 
 // ============================================
 // TAB NAVIGATION
 // ============================================
 function showTab(tabName) {
-    // Hide all tabs
-    document.querySelectorAll('.tab-section').forEach(tab => {
+    document.querySelectorAll('.tab-section').forEach(function(tab) {
         tab.classList.remove('active');
     });
 
-    // Remove active class from all action buttons
-    document.querySelectorAll('.action-btn').forEach(btn => {
+    document.querySelectorAll('.action-btn').forEach(function(btn) {
         btn.classList.remove('active');
     });
 
-    // Remove active class from all mobile nav items
-    document.querySelectorAll('.mobile-nav-item').forEach(item => {
+    document.querySelectorAll('.mobile-nav-item').forEach(function(item) {
         item.classList.remove('active');
     });
 
-    // Show selected tab
-    document.getElementById(`${tabName}-tab`).classList.add('active');
+    var targetTab = document.getElementById(tabName + '-tab');
+    if (targetTab) targetTab.classList.add('active');
 
-    // Add active class to clicked button
-    document.querySelector(`[data-action="${tabName}"]`)?.classList.add('active');
+    var actionBtn = document.querySelector('[data-action="' + tabName + '"]');
+    if (actionBtn) actionBtn.classList.add('active');
 
-    // Add active class to mobile nav item
-    document.querySelector(`.mobile-nav-item[data-tab="${tabName}"]`)?.classList.add('active');
+    var mobileNav = document.querySelector('.mobile-nav-item[data-tab="' + tabName + '"]');
+    if (mobileNav) mobileNav.classList.add('active');
 
-    // Update content if needed
     if (tabName === 'leaderboard') {
         renderLeaderboard();
     } else if (tabName === 'register') {
         renderDogsList();
     }
 
-    // Scroll to top on mobile
     if (window.innerWidth <= 768) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -149,23 +234,25 @@ function showTab(tabName) {
 // CONFETTI EFFECT
 // ============================================
 function startConfetti() {
-    const container = document.getElementById('confetti');
-    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+    var container = document.getElementById('confetti');
+    var colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
 
-    for (let i = 0; i < 50; i++) {
-        setTimeout(() => {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti';
-            confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.animationDelay = Math.random() * 2 + 's';
-            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-            container.appendChild(confetti);
+    for (var i = 0; i < 50; i++) {
+        (function(index) {
+            setTimeout(function() {
+                var confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                container.appendChild(confetti);
 
-            setTimeout(() => {
-                confetti.remove();
-            }, 4000);
-        }, i * 100);
+                setTimeout(function() {
+                    confetti.remove();
+                }, 4000);
+            }, index * 100);
+        })(i);
     }
 }
 
@@ -173,8 +260,8 @@ function startConfetti() {
 // TOGGLE FUNCTIONS
 // ============================================
 function toggleRegistration() {
-    const content = document.getElementById('registration-content');
-    const icon = document.querySelector('.collapse-icon');
+    var content = document.getElementById('registration-content');
+    var icon = document.querySelector('.collapse-icon');
     if (content.style.display === 'none') {
         content.style.display = 'block';
         icon.textContent = '▲';
@@ -185,7 +272,7 @@ function toggleRegistration() {
 }
 
 function toggleSettings() {
-    const modal = document.getElementById('settings-modal');
+    var modal = document.getElementById('settings-modal');
     if (modal.style.display === 'flex') {
         modal.style.display = 'none';
     } else {
@@ -194,10 +281,9 @@ function toggleSettings() {
 }
 
 function scrollToLeaderboard() {
-    const leaderboard = document.querySelector('.dashboard-section');
+    var leaderboard = document.querySelector('.dashboard-section');
     if (leaderboard) {
         leaderboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        // Render leaderboard to ensure it's up to date
         renderLeaderboard();
     }
 }
@@ -218,22 +304,59 @@ function setupEventListeners() {
     document.getElementById('reset-btn').addEventListener('click', resetTimer);
 
     // VP checkboxes and grades
-    document.querySelectorAll('.vp-found').forEach(checkbox => {
+    document.querySelectorAll('.vp-found').forEach(function(checkbox) {
         checkbox.addEventListener('change', handleVPChange);
     });
 
-    document.querySelectorAll('.grade-select').forEach(select => {
+    document.querySelectorAll('.grade-select').forEach(function(select) {
         select.addEventListener('change', calculateLiveScore);
     });
 
     // Attire and bonus checkboxes
-    document.querySelectorAll('.checklist-item input').forEach(checkbox => {
+    document.querySelectorAll('.checklist-item input').forEach(function(checkbox) {
         checkbox.addEventListener('change', calculateLiveScore);
     });
 
     // Save and cancel buttons
     document.getElementById('save-score-btn').addEventListener('click', saveScore);
     document.getElementById('cancel-btn').addEventListener('click', cancelScoring);
+
+    // Dark mode toggle
+    document.getElementById('dark-mode-toggle').addEventListener('click', toggleDarkMode);
+
+    // Toast click for undo
+    document.getElementById('toast').addEventListener('click', function() {
+        if (undoData) performUndo();
+    });
+
+    // Escape key handler
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            var editModal = document.getElementById('edit-modal');
+            var settingsModal = document.getElementById('settings-modal');
+            if (editModal.classList.contains('active')) {
+                closeEditModal();
+            } else if (settingsModal.style.display === 'flex') {
+                toggleSettings();
+            }
+        }
+    });
+
+    // Unload warning
+    window.addEventListener('beforeunload', function(e) {
+        if (document.getElementById('judging-panel').style.display !== 'none') {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+
+    // Modal outside click
+    window.addEventListener('click', function(event) {
+        var editModal = document.getElementById('edit-modal');
+        if (event.target === editModal) {
+            closeEditModal();
+        }
+    });
 }
 
 // ============================================
@@ -255,7 +378,7 @@ function handleRegistration(e) {
         return;
     }
 
-    const dog = {
+    var dog = {
         id: Date.now(),
         dogName: document.getElementById('dog-name').value.trim(),
         dogBreed: document.getElementById('dog-breed').value.trim(),
@@ -265,11 +388,8 @@ function handleRegistration(e) {
 
     dogs.push(dog);
     saveDogs();
-    renderDogsList();
-    updateDogSelect();
-    updateHeaderStats();
+    refreshAll();
 
-    // Reset form
     e.target.reset();
 
     showToast('ลงทะเบียนสำเร็จ! 🎉', 'success');
@@ -277,42 +397,46 @@ function handleRegistration(e) {
 }
 
 function renderDogsList() {
-    const container = document.getElementById('teams-container');
+    var container = document.getElementById('teams-container');
     document.getElementById('team-count').textContent = dogs.length;
 
     if (dogs.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">🐕</div>
-                <div class="empty-state-text">ยังไม่มีสุนัขลงทะเบียน</div>
-            </div>
-        `;
+        container.innerHTML =
+            '<div class="empty-state">' +
+                '<div class="empty-state-icon">🐕</div>' +
+                '<div class="empty-state-text">ยังไม่มีสุนัขลงทะเบียน</div>' +
+            '</div>';
         return;
     }
 
-    container.innerHTML = dogs.map(dog => `
-        <div class="team-card">
-            <div class="team-card-header">
-                <div class="team-name">${dog.dogName}</div>
-                <button class="team-delete" onclick="deleteDog(${dog.id})" title="ลบสุนัข">🗑️</button>
-            </div>
-            <div class="team-info">
-                <span>🐕 ${dog.dogName} (${dog.dogBreed})</span>
-                <span>👤 ${dog.handlerName}</span>
-            </div>
-        </div>
-    `).join('');
+    container.innerHTML = dogs.map(function(dog) {
+        return '<div class="team-card">' +
+            '<div class="team-card-header">' +
+                '<div class="team-name">' + dog.dogName + '</div>' +
+                '<button class="team-delete" onclick="deleteDog(' + dog.id + ')" title="ลบสุนัข">🗑️</button>' +
+            '</div>' +
+            '<div class="team-info">' +
+                '<span>🐕 ' + dog.dogName + ' (' + dog.dogBreed + ')</span>' +
+                '<span>👤 ' + dog.handlerName + '</span>' +
+            '</div>' +
+        '</div>';
+    }).join('');
 }
 
 function deleteDog(id) {
-    if (confirm('ยืนยันการลบสุนัข?')) {
-        dogs = dogs.filter(d => d.id !== id);
-        saveDogs();
-        renderDogsList();
-        updateDogSelect();
-        updateHeaderStats();
-        showToast('ลบสุนัขเรียบร้อย', 'success');
-    }
+    var dog = dogs.find(function(d) { return d.id === id; });
+    if (!dog) return;
+
+    var dogScores = scores.filter(function(s) { return s.dogId === id; });
+
+    dogs = dogs.filter(function(d) { return d.id !== id; });
+    scores = scores.filter(function(s) { return s.dogId !== id; });
+    saveDogs();
+    saveScores();
+    refreshAll();
+
+    undoData = { type: 'dog', dog: dog, scores: dogScores };
+    showToastWithUndo('ลบ ' + dog.dogName + ' แล้ว (คลิกเพื่อย้อนกลับ)');
 }
 
 function saveDogs() {
@@ -323,19 +447,21 @@ function saveDogs() {
 // TEAM SELECT
 // ============================================
 function updateDogSelect() {
-    const select = document.getElementById('team-select');
-    const scoredDogIds = scores.map(s => s.dogId);
+    var select = document.getElementById('team-select');
+    var scoredDogIds = scores.map(function(s) { return s.dogId; });
 
     select.innerHTML = '<option value="">-- เลือกสุนัข --</option>' +
         dogs
-            .filter(d => !scoredDogIds.includes(d.id))
-            .map(dog => `<option value="${dog.id}">${dog.dogName} - ${dog.handlerName}</option>`)
+            .filter(function(d) { return scoredDogIds.indexOf(d.id) === -1; })
+            .map(function(dog) {
+                return '<option value="' + dog.id + '">' + dog.dogName + ' - ' + dog.handlerName + '</option>';
+            })
             .join('');
 }
 
 function handleTeamSelect() {
-    const dogId = parseInt(document.getElementById('team-select').value);
-    const panel = document.getElementById('judging-panel');
+    var dogId = parseInt(document.getElementById('team-select').value);
+    var panel = document.getElementById('judging-panel');
 
     if (dogId) {
         panel.style.display = 'block';
@@ -354,7 +480,7 @@ function startTimer() {
         document.getElementById('start-btn').disabled = true;
         document.getElementById('pause-btn').disabled = false;
 
-        timerInterval = setInterval(() => {
+        timerInterval = setInterval(function() {
             timerSeconds++;
             updateTimerDisplay();
         }, 1000);
@@ -377,18 +503,18 @@ function resetTimer() {
 }
 
 function updateTimerDisplay() {
-    const minutes = Math.floor(timerSeconds / 60);
-    const seconds = timerSeconds % 60;
+    var minutes = Math.floor(timerSeconds / 60);
+    var seconds = timerSeconds % 60;
     document.getElementById('timer-display').textContent =
-        `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
 }
 
 // ============================================
 // VP SCORING
 // ============================================
 function handleVPChange(e) {
-    const checkbox = e.target;
-    const vpItem = checkbox.closest('.vp-item');
+    var checkbox = e.target;
+    var vpItem = checkbox.closest('.vp-item');
 
     if (checkbox.checked) {
         vpItem.classList.add('found');
@@ -400,18 +526,17 @@ function handleVPChange(e) {
 }
 
 function calculateLiveScore() {
-    let vpScore = 0;
-    let attireScore = 0;
-    let bonusScore = 0;
+    var vpScore = 0;
+    var attireScore = 0;
+    var bonusScore = 0;
 
-    // Calculate VP scores
-    const vpPoints = {
+    var vpPoints = {
         1: settings.vp1Points,
         2: settings.vp2Points,
         3: settings.vp3Points
     };
 
-    const gradePercentages = {
+    var gradePercentages = {
         'V': settings.gradeV / 100,
         'SG': settings.gradeSG / 100,
         'G': settings.gradeG / 100,
@@ -419,50 +544,46 @@ function calculateLiveScore() {
         'M': settings.gradeM / 100
     };
 
-    for (let i = 1; i <= 3; i++) {
-        const found = document.querySelector(`.vp-found[data-vp="${i}"]`).checked;
-        const grade = document.querySelector(`.grade-select[data-vp="${i}"]`).value;
+    for (var i = 1; i <= 3; i++) {
+        var found = document.querySelector('.vp-found[data-vp="' + i + '"]').checked;
+        var grade = document.querySelector('.grade-select[data-vp="' + i + '"]').value;
 
         if (found) {
             vpScore += vpPoints[i] * gradePercentages[grade];
         }
     }
 
-    // Calculate attire score
-    const requiredItems = ['attire-shoes', 'attire-shirt', 'attire-pants'];
-    const bonusItems = ['attire-hat', 'attire-gloves'];
+    var requiredItems = ['attire-shoes', 'attire-shirt', 'attire-pants'];
+    var bonusItems = ['attire-hat', 'attire-gloves'];
 
-    let requiredCount = 0;
-    requiredItems.forEach(id => {
+    var requiredCount = 0;
+    requiredItems.forEach(function(id) {
         if (document.getElementById(id).checked) requiredCount++;
     });
 
-    let bonusCount = 0;
-    bonusItems.forEach(id => {
-        if (document.getElementById(id).checked) bonusCount++;
+    var bonusItemCount = 0;
+    bonusItems.forEach(function(id) {
+        if (document.getElementById(id).checked) bonusItemCount++;
     });
 
-    attireScore = (requiredCount * settings.attireRequired) + (bonusCount * settings.attireBonus);
+    attireScore = (requiredCount * settings.attireRequired) + (bonusItemCount * settings.attireBonus);
     if (attireScore > settings.attireMax) attireScore = settings.attireMax;
 
-    // Calculate bonus score
     if (document.getElementById('bonus-vp1-1min').checked) bonusScore += settings.bonusVp1;
     if (document.getElementById('bonus-vp2-2min').checked) bonusScore += settings.bonusVp2;
     if (document.getElementById('bonus-all-3min').checked) bonusScore += settings.bonusAll;
     if (document.getElementById('bonus-down').checked) bonusScore += settings.bonusDown;
 
-    // Update display
-    const totalScore = vpScore + attireScore + bonusScore;
+    var totalScore = vpScore + attireScore + bonusScore;
     document.getElementById('vp-score-live').textContent = vpScore.toFixed(1);
     document.getElementById('attire-score-live').textContent = attireScore;
     document.getElementById('bonus-score-live').textContent = bonusScore;
     document.getElementById('total-score-live').textContent = totalScore.toFixed(1);
 
-    // Update sticky score bar
-    const stickyTotal = document.getElementById('sticky-total-score');
-    const stickyVp = document.getElementById('sticky-vp-score');
-    const stickyAttire = document.getElementById('sticky-attire-score');
-    const stickyBonus = document.getElementById('sticky-bonus-score');
+    var stickyTotal = document.getElementById('sticky-total-score');
+    var stickyVp = document.getElementById('sticky-vp-score');
+    var stickyAttire = document.getElementById('sticky-attire-score');
+    var stickyBonus = document.getElementById('sticky-bonus-score');
 
     if (stickyTotal) {
         stickyTotal.textContent = totalScore.toFixed(1);
@@ -476,24 +597,22 @@ function calculateLiveScore() {
 // SAVE SCORE
 // ============================================
 function saveScore() {
-    const dogId = parseInt(document.getElementById('team-select').value);
-    const dog = dogs.find(d => d.id === dogId);
+    var dogId = parseInt(document.getElementById('team-select').value);
+    var dog = dogs.find(function(d) { return d.id === dogId; });
 
     if (!dog) {
         showToast('กรุณาเลือกสุนัข', 'error');
         return;
     }
 
-    // Calculate final scores
     calculateLiveScore();
-    const vpScore = parseFloat(document.getElementById('vp-score-live').textContent);
-    const attireScore = parseFloat(document.getElementById('attire-score-live').textContent);
-    const bonusScore = parseFloat(document.getElementById('bonus-score-live').textContent);
-    const totalScore = vpScore + attireScore + bonusScore;
+    var vpScore = parseFloat(document.getElementById('vp-score-live').textContent);
+    var attireScore = parseFloat(document.getElementById('attire-score-live').textContent);
+    var bonusScore = parseFloat(document.getElementById('bonus-score-live').textContent);
+    var totalScore = vpScore + attireScore + bonusScore;
 
-    // Gather VP details
-    const vpDetails = {};
-    const gradePercentages = {
+    var vpDetails = {};
+    var gradePercentages = {
         'V': settings.gradeV / 100,
         'SG': settings.gradeSG / 100,
         'G': settings.gradeG / 100,
@@ -501,17 +620,17 @@ function saveScore() {
         'M': settings.gradeM / 100
     };
 
-    const vpPoints = {
+    var vpPoints = {
         1: settings.vp1Points,
         2: settings.vp2Points,
         3: settings.vp3Points
     };
 
-    for (let i = 1; i <= 3; i++) {
-        const found = document.querySelector(`.vp-found[data-vp="${i}"]`).checked;
-        const grade = document.querySelector(`.grade-select[data-vp="${i}"]`).value;
+    for (var i = 1; i <= 3; i++) {
+        var found = document.querySelector('.vp-found[data-vp="' + i + '"]').checked;
+        var grade = document.querySelector('.grade-select[data-vp="' + i + '"]').value;
 
-        let earnedScore = 0;
+        var earnedScore = 0;
         if (found) {
             earnedScore = vpPoints[i] * gradePercentages[grade];
         }
@@ -523,8 +642,7 @@ function saveScore() {
         };
     }
 
-    // Create score record
-    const scoreRecord = {
+    var scoreRecord = {
         id: Date.now(),
         dogId: dogId,
         dogName: dog.dogName,
@@ -546,9 +664,8 @@ function saveScore() {
     showToast('บันทึกคะแนนสำเร็จ! 🎉', 'success');
     startConfetti();
 
-    // Reset and close
     cancelScoring();
-    updateHeaderStats();
+    refreshAll();
 }
 
 function cancelScoring() {
@@ -558,40 +675,32 @@ function cancelScoring() {
 }
 
 function resetScoringForm() {
-    // Reset VP checkboxes
-    document.querySelectorAll('.vp-found').forEach(checkbox => {
+    document.querySelectorAll('.vp-found').forEach(function(checkbox) {
         checkbox.checked = false;
     });
 
-    document.querySelectorAll('.vp-item').forEach(item => {
+    document.querySelectorAll('.vp-item').forEach(function(item) {
         item.classList.remove('found');
     });
 
-    // Reset grades to V
-    document.querySelectorAll('.grade-select').forEach(select => {
+    document.querySelectorAll('.grade-select').forEach(function(select) {
         select.value = 'V';
     });
 
-    // Reset attire
     document.getElementById('attire-shoes').checked = true;
     document.getElementById('attire-shirt').checked = true;
     document.getElementById('attire-pants').checked = true;
     document.getElementById('attire-hat').checked = false;
     document.getElementById('attire-gloves').checked = false;
 
-    // Reset bonuses
     document.getElementById('bonus-vp1-1min').checked = false;
     document.getElementById('bonus-vp2-2min').checked = false;
     document.getElementById('bonus-all-3min').checked = false;
     document.getElementById('bonus-down').checked = false;
 
-    // Reset notes
     document.getElementById('judge-notes').value = '';
 
-    // Reset timer
     resetTimer();
-
-    // Calculate initial score
     calculateLiveScore();
 }
 
@@ -603,118 +712,145 @@ function saveScores() {
 // LEADERBOARD
 // ============================================
 function renderLeaderboard() {
-    const container = document.getElementById('leaderboard-content');
+    var container = document.getElementById('leaderboard-content');
 
     if (scores.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">🏆</div>
-                <div class="empty-state-text">ยังไม่มีคะแนน</div>
-            </div>
-        `;
+        container.innerHTML =
+            '<div class="empty-state">' +
+                '<div class="empty-state-icon">🏆</div>' +
+                '<div class="empty-state-text">ยังไม่มีคะแนน</div>' +
+            '</div>';
         return;
     }
 
-    // Sort by total score (descending), then by time (ascending)
-    const sortedScores = [...scores].sort((a, b) => {
+    var sortedScores = scores.slice().sort(function(a, b) {
         if (b.totalScore !== a.totalScore) {
             return b.totalScore - a.totalScore;
         }
         return a.timeInSeconds - b.timeInSeconds;
     });
 
-    container.innerHTML = sortedScores.map((score, index) => {
-        const rank = index + 1;
-        let rankClass = 'rank-other';
+    container.innerHTML = sortedScores.map(function(score, index) {
+        var rank = index + 1;
+        var rankClass = 'rank-other';
         if (rank === 1) rankClass = 'rank-1';
         else if (rank === 2) rankClass = 'rank-2';
         else if (rank === 3) rankClass = 'rank-3';
 
-        const minutes = Math.floor(score.timeInSeconds / 60);
-        const seconds = score.timeInSeconds % 60;
-        const timeDisplay = score.timeInSeconds > 0 ?
-            `${minutes}:${String(seconds).padStart(2, '0')}` : '-';
+        var minutes = Math.floor(score.timeInSeconds / 60);
+        var seconds = score.timeInSeconds % 60;
+        var timeDisplay = score.timeInSeconds > 0 ?
+            minutes + ':' + String(seconds).padStart(2, '0') : '-';
 
-        const vpCount = Object.values(score.vpDetails).filter(vp => vp.found).length;
+        var vpCount = Object.values(score.vpDetails).filter(function(vp) { return vp.found; }).length;
 
-        return `
-            <div class="leaderboard-item">
-                <div class="leaderboard-rank ${rankClass}">${rank}</div>
-                <div class="leaderboard-info">
-                    <div class="leaderboard-team">${score.dogName}</div>
-                    <div class="leaderboard-details">
-                        🐕 ${score.dogName} (${score.dogBreed || '-'}) | 👤 ${score.handlerName} |
-                        🎯 พบ ${vpCount}/3 VP | ⏱️ ${timeDisplay}
-                    </div>
-                </div>
-                <div class="leaderboard-score">
-                    <div class="leaderboard-total">${score.totalScore.toFixed(1)}</div>
-                    <div class="leaderboard-bonus">+${score.bonusScore} โบนัส</div>
-                </div>
-                <div class="leaderboard-actions-btn">
-                    <button class="edit-btn" onclick="editScore(${score.id})">✏️ แก้ไข</button>
-                    <button class="delete-btn" onclick="deleteScore(${score.id})">🗑️ ลบ</button>
-                </div>
-            </div>
-        `;
+        return '<div class="leaderboard-item">' +
+            '<div class="leaderboard-rank ' + rankClass + '">' + rank + '</div>' +
+            '<div class="leaderboard-info">' +
+                '<div class="leaderboard-team">' + score.dogName + '</div>' +
+                '<div class="leaderboard-details">' +
+                    '🐕 ' + score.dogName + ' (' + (score.dogBreed || '-') + ') | 👤 ' + score.handlerName + ' | ' +
+                    '🎯 พบ ' + vpCount + '/3 VP | ⏱️ ' + timeDisplay +
+                '</div>' +
+            '</div>' +
+            '<div class="leaderboard-score">' +
+                '<div class="leaderboard-total">' + score.totalScore.toFixed(1) + '</div>' +
+                '<div class="leaderboard-bonus">+' + score.bonusScore + ' โบนัส</div>' +
+            '</div>' +
+            '<div class="leaderboard-actions-btn">' +
+                '<button class="edit-btn" onclick="editScore(' + score.id + ')">✏️ แก้ไข</button>' +
+                '<button class="delete-btn" onclick="deleteScore(' + score.id + ')">🗑️ ลบ</button>' +
+            '</div>' +
+        '</div>';
     }).join('');
 }
 
 function deleteScore(id) {
-    if (confirm('ยืนยันการลบคะแนน?')) {
-        scores = scores.filter(s => s.id !== id);
+    var score = scores.find(function(s) { return s.id === id; });
+    if (!score) return;
+
+    scores = scores.filter(function(s) { return s.id !== id; });
+    saveScores();
+    refreshAll();
+
+    undoData = { type: 'score', score: score };
+    showToastWithUndo('ลบคะแนน ' + score.dogName + ' แล้ว (คลิกเพื่อย้อนกลับ)');
+}
+
+// ============================================
+// UNDO
+// ============================================
+function performUndo() {
+    if (!undoData) return;
+    if (undoData.type === 'dog') {
+        dogs.push(undoData.dog);
+        scores = scores.concat(undoData.scores);
+        saveDogs();
         saveScores();
-        renderLeaderboard();
-        updateDogSelect();
-        updateHeaderStats();
-        showToast('ลบคะแนนเรียบร้อย', 'success');
+    } else if (undoData.type === 'score') {
+        scores.push(undoData.score);
+        saveScores();
     }
+    undoData = null;
+    if (undoTimeout) clearTimeout(undoTimeout);
+    refreshAll();
+    showToast('ย้อนกลับสำเร็จ!', 'success');
+}
+
+function showToastWithUndo(message) {
+    var toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'toast error undoable active';
+    if (undoTimeout) clearTimeout(undoTimeout);
+    undoTimeout = setTimeout(function() {
+        toast.classList.remove('active');
+        undoData = null;
+    }, 5000);
 }
 
 // ============================================
 // EDIT SCORE
 // ============================================
 function editScore(id) {
-    const score = scores.find(s => s.id === id);
+    var score = scores.find(function(s) { return s.id === id; });
     if (!score) return;
 
     editingScoreId = id;
 
-    const modal = document.getElementById('edit-modal');
-    const modalBody = document.getElementById('edit-modal-body');
+    var modal = document.getElementById('edit-modal');
+    var modalBody = document.getElementById('edit-modal-body');
 
-    modalBody.innerHTML = `
-        <div class="edit-form">
-            <div class="input-group">
-                <label>สุนัข</label>
-                <input type="text" value="${score.dogName}" disabled>
-            </div>
-            <div class="input-group">
-                <label>ผู้ควบคุม</label>
-                <input type="text" value="${score.handlerName}" disabled>
-            </div>
-            <div class="input-group">
-                <label>คะแนน VP</label>
-                <input type="number" id="edit-vp-score" value="${score.vpScore}" step="0.1" min="0">
-            </div>
-            <div class="input-group">
-                <label>คะแนนการแต่งกาย</label>
-                <input type="number" id="edit-attire-score" value="${score.attireScore}" step="0.1" min="0" max="${settings.attireMax}">
-            </div>
-            <div class="input-group">
-                <label>คะแนนโบนัส</label>
-                <input type="number" id="edit-bonus-score" value="${score.bonusScore}" step="0.1" min="0">
-            </div>
-            <div class="input-group">
-                <label>เวลา (วินาที)</label>
-                <input type="number" id="edit-time" value="${score.timeInSeconds}" min="0">
-            </div>
-            <div class="input-group">
-                <label>หมายเหตุ</label>
-                <textarea id="edit-notes">${score.notes || ''}</textarea>
-            </div>
-        </div>
-    `;
+    modalBody.innerHTML =
+        '<div class="edit-form">' +
+            '<div class="input-group">' +
+                '<label>สุนัข</label>' +
+                '<input type="text" value="' + score.dogName + '" disabled>' +
+            '</div>' +
+            '<div class="input-group">' +
+                '<label>ผู้ควบคุม</label>' +
+                '<input type="text" value="' + score.handlerName + '" disabled>' +
+            '</div>' +
+            '<div class="input-group">' +
+                '<label>คะแนน VP</label>' +
+                '<input type="number" id="edit-vp-score" value="' + score.vpScore + '" step="0.1" min="0">' +
+            '</div>' +
+            '<div class="input-group">' +
+                '<label>คะแนนการแต่งกาย</label>' +
+                '<input type="number" id="edit-attire-score" value="' + score.attireScore + '" step="0.1" min="0" max="' + settings.attireMax + '">' +
+            '</div>' +
+            '<div class="input-group">' +
+                '<label>คะแนนโบนัส</label>' +
+                '<input type="number" id="edit-bonus-score" value="' + score.bonusScore + '" step="0.1" min="0">' +
+            '</div>' +
+            '<div class="input-group">' +
+                '<label>เวลา (วินาที)</label>' +
+                '<input type="number" id="edit-time" value="' + score.timeInSeconds + '" min="0">' +
+            '</div>' +
+            '<div class="input-group">' +
+                '<label>หมายเหตุ</label>' +
+                '<textarea id="edit-notes">' + (score.notes || '') + '</textarea>' +
+            '</div>' +
+        '</div>';
 
     modal.classList.add('active');
 }
@@ -727,27 +863,26 @@ function closeEditModal() {
 function saveEditedScore() {
     if (!editingScoreId) return;
 
-    const scoreIndex = scores.findIndex(s => s.id === editingScoreId);
+    var scoreIndex = scores.findIndex(function(s) { return s.id === editingScoreId; });
     if (scoreIndex === -1) return;
 
-    const vpScore = parseFloat(document.getElementById('edit-vp-score').value) || 0;
-    const attireScore = parseFloat(document.getElementById('edit-attire-score').value) || 0;
-    const bonusScore = parseFloat(document.getElementById('edit-bonus-score').value) || 0;
-    const timeInSeconds = parseInt(document.getElementById('edit-time').value) || 0;
-    const notes = document.getElementById('edit-notes').value;
+    var vpScore = parseFloat(document.getElementById('edit-vp-score').value) || 0;
+    var attireScore = parseFloat(document.getElementById('edit-attire-score').value) || 0;
+    var bonusScore = parseFloat(document.getElementById('edit-bonus-score').value) || 0;
+    var timeInSeconds = parseInt(document.getElementById('edit-time').value) || 0;
+    var notes = document.getElementById('edit-notes').value;
 
-    scores[scoreIndex] = {
-        ...scores[scoreIndex],
+    scores[scoreIndex] = Object.assign({}, scores[scoreIndex], {
         vpScore: vpScore,
         attireScore: attireScore,
         bonusScore: bonusScore,
         totalScore: vpScore + attireScore + bonusScore,
         timeInSeconds: timeInSeconds,
         notes: notes
-    };
+    });
 
     saveScores();
-    renderLeaderboard();
+    refreshAll();
     closeEditModal();
     showToast('แก้ไขคะแนนสำเร็จ!', 'success');
 }
@@ -793,6 +928,7 @@ function saveSettings() {
     };
 
     localStorage.setItem('k9_settings', JSON.stringify(settings));
+    updateSettingsDisplay();
     showToast('บันทึกตั้งค่าสำเร็จ!', 'success');
 }
 
@@ -817,6 +953,7 @@ function resetSettings() {
         };
 
         loadSettings();
+        updateSettingsDisplay();
         localStorage.setItem('k9_settings', JSON.stringify(settings));
         showToast('คืนค่าเดิมสำเร็จ', 'success');
     }
@@ -831,27 +968,27 @@ function exportCSV() {
         return;
     }
 
-    const sortedScores = [...scores].sort((a, b) => {
+    var sortedScores = scores.slice().sort(function(a, b) {
         if (b.totalScore !== a.totalScore) {
             return b.totalScore - a.totalScore;
         }
         return a.timeInSeconds - b.timeInSeconds;
     });
 
-    let csv = '﻿ลำดับ,สุนัข,สายพันธุ์,ผู้ควบคุม,VP1,VP2,VP3,การแต่งกาย,โบนัส,รวม,เวลา(นาที),หมายเหตุ\n';
+    var csv = '﻿ลำดับ,สุนัข,สายพันธุ์,ผู้ควบคุม,VP1,VP2,VP3,การแต่งกาย,โบนัส,รวม,เวลา(นาที),หมายเหตุ\n';
 
-    sortedScores.forEach((score, index) => {
-        const minutes = (score.timeInSeconds / 60).toFixed(2);
-        csv += `${index + 1},"${score.dogName}","${score.dogBreed || '-'}","${score.handlerName}",` +
-               `${score.vpDetails[1].score.toFixed(1)},${score.vpDetails[2].score.toFixed(1)},` +
-               `${score.vpDetails[3].score.toFixed(1)},${score.attireScore},${score.bonusScore},` +
-               `${score.totalScore.toFixed(1)},${minutes},"${score.notes || ''}"\n`;
+    sortedScores.forEach(function(score, index) {
+        var minutes = (score.timeInSeconds / 60).toFixed(2);
+        csv += (index + 1) + ',"' + score.dogName + '","' + (score.dogBreed || '-') + '","' + score.handlerName + '",' +
+               score.vpDetails[1].score.toFixed(1) + ',' + score.vpDetails[2].score.toFixed(1) + ',' +
+               score.vpDetails[3].score.toFixed(1) + ',' + score.attireScore + ',' + score.bonusScore + ',' +
+               score.totalScore.toFixed(1) + ',' + minutes + ',"' + (score.notes || '') + '"\n';
     });
 
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    var link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `k9_scores_${new Date().toISOString().split('T')[0]}.csv`;
+    link.download = 'k9_scores_' + new Date().toISOString().split('T')[0] + '.csv';
     link.click();
 
     showToast('ส่งออก CSV สำเร็จ!', 'success');
@@ -864,10 +1001,7 @@ function confirmClearAll() {
             scores = [];
             saveDogs();
             saveScores();
-            renderDogsList();
-            renderLeaderboard();
-            updateDogSelect();
-            updateHeaderStats();
+            refreshAll();
             showToast('ลบข้อมูลทั้งหมดเรียบร้อย', 'success');
         }
     }
@@ -876,20 +1010,13 @@ function confirmClearAll() {
 // ============================================
 // TOAST NOTIFICATION
 // ============================================
-function showToast(message, type = 'success') {
-    const toast = document.getElementById('toast');
+function showToast(message, type) {
+    type = type || 'success';
+    var toast = document.getElementById('toast');
     toast.textContent = message;
-    toast.className = `toast ${type} active`;
+    toast.className = 'toast ' + type + ' active';
 
-    setTimeout(() => {
+    setTimeout(function() {
         toast.classList.remove('active');
     }, 3000);
-}
-
-// Close modal on outside click
-window.onclick = function(event) {
-    const modal = document.getElementById('edit-modal');
-    if (event.target === modal) {
-        closeEditModal();
-    }
 }
