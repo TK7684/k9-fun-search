@@ -1,10 +1,12 @@
-const CACHE = 'k9-v2';
+const CACHE = 'k9-v3';
 const ASSETS = [
     '/',
     '/index.html',
     '/styles.css',
     '/script.js',
     '/manifest.json',
+    '/icon-192.png',
+    '/icon-512.png',
 ];
 
 self.addEventListener('install', e => {
