@@ -56,11 +56,11 @@
                 <span class="btn-icon">📝</span>
                 <span class="btn-text">คิดคะแนน</span>
             </button>
-            <button class="action-btn" data-action="leaderboard" onclick="showTab('leaderboard')">
+            <button class="action-btn" data-action="leaderboard" onclick="scrollToLeaderboard()">
                 <span class="btn-icon">🏆</span>
                 <span class="btn-text">ตารางคะแนน</span>
             </button>
-            <button class="action-btn" data-action="settings" onclick="showTab('settings')">
+            <button class="action-btn" data-action="settings" onclick="toggleSettings()">
                 <span class="btn-icon">⚙️</span>
                 <span class="btn-text">ตั้งค่า</span>
             </button>
@@ -546,6 +546,26 @@
                 </div>
             </div>
         </div>
+
+        <!-- Mobile Bottom Navigation -->
+        <nav class="mobile-nav">
+            <button class="mobile-nav-item" onclick="showTab('register')" data-tab="register">
+                <span class="nav-icon">➕</span>
+                <span class="nav-label">ลงทะเบียน</span>
+            </button>
+            <button class="mobile-nav-item" onclick="showTab('judge')" data-tab="judge">
+                <span class="nav-icon">📝</span>
+                <span class="nav-label">คิดคะแนน</span>
+            </button>
+            <button class="mobile-nav-item" onclick="scrollToLeaderboard()" data-tab="leaderboard">
+                <span class="nav-icon">🏆</span>
+                <span class="nav-label">ตาราง</span>
+            </button>
+            <button class="mobile-nav-item" onclick="toggleSettings()" data-tab="settings">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-label">ตั้งค่า</span>
+            </button>
+        </nav>
 
         <!-- Toast Notification -->
         <div id="toast" class="toast"></div>

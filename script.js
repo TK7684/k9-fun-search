@@ -105,6 +105,47 @@ function initializeApp() {
 }
 
 // ============================================
+// TAB NAVIGATION
+// ============================================
+function showTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-section').forEach(tab => {
+        tab.classList.remove('active');
+    });
+
+    // Remove active class from all action buttons
+    document.querySelectorAll('.action-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    // Remove active class from all mobile nav items
+    document.querySelectorAll('.mobile-nav-item').forEach(item => {
+        item.classList.remove('active');
+    });
+
+    // Show selected tab
+    document.getElementById(`${tabName}-tab`).classList.add('active');
+
+    // Add active class to clicked button
+    document.querySelector(`[data-action="${tabName}"]`)?.classList.add('active');
+
+    // Add active class to mobile nav item
+    document.querySelector(`.mobile-nav-item[data-tab="${tabName}"]`)?.classList.add('active');
+
+    // Update content if needed
+    if (tabName === 'leaderboard') {
+        renderLeaderboard();
+    } else if (tabName === 'register') {
+        renderDogsList();
+    }
+
+    // Scroll to top on mobile
+    if (window.innerWidth <= 768) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+// ============================================
 // CONFETTI EFFECT
 // ============================================
 function startConfetti() {
@@ -149,6 +190,15 @@ function toggleSettings() {
         modal.style.display = 'none';
     } else {
         modal.style.display = 'flex';
+    }
+}
+
+function scrollToLeaderboard() {
+    const leaderboard = document.querySelector('.dashboard-section');
+    if (leaderboard) {
+        leaderboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Render leaderboard to ensure it's up to date
+        renderLeaderboard();
     }
 }
 
