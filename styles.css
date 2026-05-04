@@ -1605,7 +1605,7 @@ body {
 
 .info-timeline {
     padding: 20px 24px;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--border-color);
 }
 
 .info-timeline h3 {

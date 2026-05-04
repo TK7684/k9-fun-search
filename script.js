@@ -78,12 +78,12 @@ function parseCSV(csvText) {
             } else if (ch === ',') {
                 row.push(cell.trim());
                 cell = '';
-            } else if (ch === '\n' || (ch === '\r' && csvText[i + 1] === '\n')) {
+            } else if (ch === '\r' || ch === '\n') {
                 row.push(cell.trim());
                 if (row.some(function(c) { return c.length > 0; })) rows.push(row);
                 row = [];
                 cell = '';
-                if (ch === '\r') i++;
+                if (ch === '\r' && i + 1 < csvText.length && csvText[i + 1] === '\n') i++;
             } else {
                 cell += ch;
             }
@@ -143,7 +143,7 @@ function fetchSheetData() {
             return response.text();
         })
         .then(function(text) {
-            if (text.indexOf('<!') === 0 || text.indexOf('<html') === 0) {
+            if (text.substring(0, 100).toLowerCase().indexOf('<!doctype html') === 0 || text.substring(0, 100).toLowerCase().indexOf('<html') >= 0) {
                 throw new Error('ได้รับ HTML แทน CSV — กรุณาตั้งค่าการแชร์ Google Sheet เป็น "ทุกคนที่มีลิงก์"');
             }
             var rows = parseCSV(text);
@@ -683,7 +683,7 @@ function renderDogsList() {
         var isSheet = dog.source === 'sheet';
         var badge = isSheet ? '<span class="sheet-badge-inline">Form</span>' : '';
         var deleteBtn = isSheet ? '' :
-            '<button class="team-delete" onclick="deleteDog(' + dog.id + ')" title="ลบสุนัข">🗑️</button>';
+            '<button class="team-delete" onclick="deleteDog(\'' + dog.id + '\')" title="ลบสุนัข">🗑️</button>';
         return '<div class="team-card' + (isSheet ? ' sheet-origin' : '') + '">' +
             '<div class="team-card-header">' +
                 '<div class="team-name">' + dog.dogName + ' ' + badge + '</div>' +
@@ -698,7 +698,8 @@ function renderDogsList() {
 }
 
 function deleteDog(id) {
-    var dog = dogs.find(function(d) { return d.id === id; });
+    var numId = typeof id === 'string' && !id.startsWith('sheet-') ? parseInt(id) : id;
+    var dog = dogs.find(function(d) { return d.id === numId; });
     if (!dog) return;
 
     var dogScores = scores.filter(function(s) { return s.dogId === id; });
