@@ -43,6 +43,280 @@ if (!settings) {
 }
 
 // ============================================
+// GOOGLE SHEET DATA
+// ============================================
+var SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/10_3_PGs8rFhM-ZFhuWLwJimes9qK_5_GtDp6ipVMp80/export?format=csv&gid=1978864481';
+var SHEET_REFRESH_INTERVAL = 5 * 60 * 1000;
+var sheetDogs = [];
+var sheetLastFetch = null;
+var sheetAutoRefreshTimer = null;
+
+var LOGO_URL = 'https://scontent.fbkk8-2.fna.fbcdn.net/v/t39.30808-6/488547076_982669337363036_1385396827900255936_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=53a332&_nc_eui2=AeFIP7FZuajEuqnJ-sx7VbXCzSPpN-3pIbLNI-k37ekhsv1R3rKopIQYQCPjN7KRiXyukulCkobil-F_aQQpq39h&_nc_ohc=UyasoZfbTjoQ7kNvwGPz9CX&_nc_oc=AdoGSibWn8px4-biPmNUUvUzyq80MVxhxaR0i1l7vPvBoGzfhZ6TUWtNeA2aLSb0a0kUrmk53jQxELDPIMUNvPH1&_nc_zt=23&_nc_ht=scontent.fbkk8-2.fna&_nc_gid=taQ4px5KNpvRjs6_9oawQQ&_nc_ss=7b2a8&oh=00_Af4nF8eYylVUlV9CzKUsCprvP8dfzHoyIr263yhBVg9TaA&oe=69FEA363';
+
+function parseCSV(csvText) {
+    var rows = [];
+    var row = [];
+    var cell = '';
+    var inQuotes = false;
+
+    for (var i = 0; i < csvText.length; i++) {
+        var ch = csvText[i];
+        if (inQuotes) {
+            if (ch === '"') {
+                if (i + 1 < csvText.length && csvText[i + 1] === '"') {
+                    cell += '"';
+                    i++;
+                } else {
+                    inQuotes = false;
+                }
+            } else {
+                cell += ch;
+            }
+        } else {
+            if (ch === '"') {
+                inQuotes = true;
+            } else if (ch === ',') {
+                row.push(cell.trim());
+                cell = '';
+            } else if (ch === '\n' || (ch === '\r' && csvText[i + 1] === '\n')) {
+                row.push(cell.trim());
+                if (row.some(function(c) { return c.length > 0; })) rows.push(row);
+                row = [];
+                cell = '';
+                if (ch === '\r') i++;
+            } else {
+                cell += ch;
+            }
+        }
+    }
+    row.push(cell.trim());
+    if (row.some(function(c) { return c.length > 0; })) rows.push(row);
+
+    return rows;
+}
+
+function mapSheetRowToDog(row, index) {
+    return {
+        id: 'sheet-' + index,
+        dogName: (row[5] || '').trim(),
+        dogBreed: (row[6] || '').trim(),
+        handlerName: (row[2] || '').trim(),
+        registeredAt: row[0] || '',
+        source: 'sheet',
+        extra: {
+            email: (row[1] || '').trim(),
+            phone: (row[3] || '').trim(),
+            lineId: (row[4] || '').trim(),
+            dogAge: (row[7] || '').trim(),
+            dogSex: (row[8] || '').trim(),
+            photoLink: (row[12] || '').trim()
+        }
+    };
+}
+
+function loadCachedSheetData() {
+    try {
+        var cached = JSON.parse(localStorage.getItem('k9_sheet_dogs'));
+        if (Array.isArray(cached)) sheetDogs = cached;
+    } catch(e) {}
+    try {
+        var ts = localStorage.getItem('k9_sheet_last_fetch');
+        if (ts) sheetLastFetch = ts;
+    } catch(e) {}
+}
+
+function saveCachedSheetData() {
+    localStorage.setItem('k9_sheet_dogs', JSON.stringify(sheetDogs));
+    localStorage.setItem('k9_sheet_last_fetch', sheetLastFetch || '');
+}
+
+function fetchSheetData() {
+    var statusEl = document.getElementById('sheet-status');
+    var refreshBtn = document.getElementById('sheet-refresh-btn');
+    if (statusEl) statusEl.className = 'sheet-status loading';
+    if (statusEl) statusEl.textContent = 'กำลังโหลดข้อมูล...';
+    if (refreshBtn) refreshBtn.disabled = true;
+
+    fetch(SHEET_CSV_URL, { cache: 'no-store' })
+        .then(function(response) {
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return response.text();
+        })
+        .then(function(text) {
+            if (text.indexOf('<!') === 0 || text.indexOf('<html') === 0) {
+                throw new Error('ได้รับ HTML แทน CSV — กรุณาตั้งค่าการแชร์ Google Sheet เป็น "ทุกคนที่มีลิงก์"');
+            }
+            var rows = parseCSV(text);
+            if (rows.length < 2) throw new Error('ไม่พบข้อมูลใน Google Sheet');
+
+            sheetDogs = [];
+            for (var i = 1; i < rows.length; i++) {
+                var row = rows[i];
+                if (row.length >= 6 && row[5] && row[5].trim()) {
+                    sheetDogs.push(mapSheetRowToDog(row, i - 1));
+                }
+            }
+
+            sheetLastFetch = new Date().toISOString();
+            saveCachedSheetData();
+
+            if (statusEl) {
+                statusEl.className = 'sheet-status';
+                statusEl.textContent = 'โหลดสำเร็จ — ' + sheetDogs.length + ' สุนัข';
+            }
+            refreshAll();
+        })
+        .catch(function(err) {
+            if (statusEl) {
+                statusEl.className = 'sheet-status error';
+                statusEl.textContent = 'ไม่สามารถโหลดข้อมูล: ' + err.message;
+            }
+            if (sheetDogs.length > 0) {
+                showToast('ใช้ข้อมูลที่บันทึกไว้ (' + sheetDogs.length + ' สุนัข)', 'error');
+            }
+        })
+        .finally(function() {
+            if (refreshBtn) refreshBtn.disabled = false;
+            updateSheetLastFetchDisplay();
+        });
+}
+
+function startSheetAutoRefresh() {
+    if (sheetAutoRefreshTimer) clearInterval(sheetAutoRefreshTimer);
+    sheetAutoRefreshTimer = setInterval(fetchSheetData, SHEET_REFRESH_INTERVAL);
+}
+
+function updateSheetLastFetchDisplay() {
+    var el = document.getElementById('sheet-last-fetch');
+    if (el && sheetLastFetch) {
+        var d = new Date(sheetLastFetch);
+        el.textContent = 'อัพเดทล่าสุด: ' + d.toLocaleTimeString('th-TH');
+    }
+}
+
+function getMergedDogs() {
+    var allDogs = sheetDogs.slice();
+    var sheetKeys = {};
+    sheetDogs.forEach(function(d) {
+        sheetKeys[d.dogName + '|' + d.handlerName] = true;
+    });
+    dogs.forEach(function(d) {
+        var key = d.dogName + '|' + d.handlerName;
+        if (!sheetKeys[key]) allDogs.push(d);
+    });
+    return allDogs;
+}
+
+function renderSheetDogs() {
+    var container = document.getElementById('sheet-dogs-container');
+    if (!container) return;
+
+    if (sheetDogs.length === 0) {
+        container.innerHTML =
+            '<div class="empty-state">' +
+                '<div class="empty-state-icon">📋</div>' +
+                '<div class="empty-state-text">ยังไม่มีข้อมูลจาก Google Form</div>' +
+            '</div>';
+        return;
+    }
+
+    container.innerHTML = sheetDogs.map(function(dog) {
+        var sexIcon = (dog.extra.dogSex.indexOf('Female') > -1 || dog.extra.dogSex.indexOf('เมีย') > -1) ? '♀️' : '♂️';
+        return '<div class="sheet-dog-card">' +
+            '<div class="sheet-dog-header">' +
+                '<span class="sheet-dog-name">🐕 ' + dog.dogName + '</span>' +
+                '<span class="sheet-badge">Google Form</span>' +
+            '</div>' +
+            '<div class="sheet-dog-info">' +
+                '<span>🦮 ' + dog.dogBreed + (dog.extra.dogAge ? ' · ' + dog.extra.dogAge : '') + ' ' + sexIcon + '</span>' +
+                '<span>👤 ' + dog.handlerName + '</span>' +
+                (dog.extra.phone ? '<span>📱 ' + dog.extra.phone + '</span>' : '') +
+                (dog.extra.lineId ? '<span>💬 LINE: ' + dog.extra.lineId + '</span>' : '') +
+            '</div>' +
+        '</div>';
+    }).join('');
+}
+
+function renderInfographic() {
+    var container = document.getElementById('infographic-content');
+    if (!container) return;
+
+    container.innerHTML =
+        '<div class="info-banner">' +
+            '<img src="' + LOGO_URL + '" alt="United SAR K9" class="info-logo">' +
+            '<div class="info-title-block">' +
+                '<h2>Fun Search by UNITED SAR K9</h2>' +
+                '<p class="info-subtitle">Thailand Working Dog Championship (TWD 2026)</p>' +
+            '</div>' +
+        '</div>' +
+
+        '<div class="info-grid">' +
+            '<div class="info-card">' +
+                '<div class="info-card-icon">📅</div>' +
+                '<h3>วันที่และสถานที่</h3>' +
+                '<p>29-31 พฤษภาคม 2026</p>' +
+                '<p>กองพันสุนัขทหารปากช่อง</p>' +
+            '</div>' +
+            '<div class="info-card">' +
+                '<div class="info-card-icon">⏰</div>' +
+                '<h3>ระยะเวลา</h3>' +
+                '<p>07:00 - 11:00 น. (4 ชม.)</p>' +
+                '<p>ค่าสมัคร 200 บาท</p>' +
+                '<p>จำกัด 20 สุนัข</p>' +
+            '</div>' +
+            '<div class="info-card">' +
+                '<div class="info-card-icon">📋</div>' +
+                '<h3>กติกา</h3>' +
+                '<p>ค้นหา 5 นาที + เตรียมตัว 5 นาที</p>' +
+                '<p>สุนัขเพศเมียที่ฮีทห้ามเข้าร่วม</p>' +
+                '<p>สุนัขที่ควบคุมไม่ได้ห้ามเข้าร่วม</p>' +
+            '</div>' +
+        '</div>' +
+
+        '<div class="info-timeline">' +
+            '<h3>⏱️ ตารางกิจกรรม</h3>' +
+            '<div class="timeline-items">' +
+                '<div class="timeline-item"><span class="timeline-time">06:30</span><span class="timeline-label">รายงานตัว · ทดสอบ recall · จับฉลาก</span></div>' +
+                '<div class="timeline-item"><span class="timeline-time">07:00</span><span class="timeline-label">เริ่มค้นหาตัวแรก</span></div>' +
+                '<div class="timeline-item"><span class="timeline-time">11:00</span><span class="timeline-label">จบ Fun Search</span></div>' +
+                '<div class="timeline-item"><span class="timeline-time">11:00+</span><span class="timeline-label">ปลอบใจสุนัข recall ไม่ผ่าน</span></div>' +
+                '<div class="timeline-item"><span class="timeline-time">11:30</span><span class="timeline-label">ประกาศผล</span></div>' +
+            '</div>' +
+        '</div>' +
+
+        '<div class="info-grid">' +
+            '<div class="info-card">' +
+                '<div class="info-card-icon">🎒</div>' +
+                '<h3>อุปกรณ์ที่ต้องเตรียม</h3>' +
+                '<ul class="info-list">' +
+                    '<li>สายจูงยาว 10 เมตร</li>' +
+                    '<li>อาหาร/น้ำสุนัข</li>' +
+                    '<li>รางวัลสำหรับสุนัข</li>' +
+                '</ul>' +
+            '</div>' +
+            '<div class="info-card">' +
+                '<div class="info-card-icon">🎁</div>' +
+                '<h3>สปอนเซอร์ Happy Bag</h3>' +
+                '<ul class="info-list">' +
+                    '<li>Jaikla</li>' +
+                    '<li>Urban Waggo</li>' +
+                    '<li>Golden Future</li>' +
+                '</ul>' +
+            '</div>' +
+        '</div>';
+}
+
+function toggleInfographic() {
+    var section = document.getElementById('infographic-section');
+    var toggle = document.getElementById('infographic-toggle');
+    if (!section) return;
+    var isOpen = section.classList.toggle('open');
+    if (toggle) {
+        toggle.querySelector('.toggle-arrow').textContent = isOpen ? '▲' : '▼';
+    }
+}
+
+// ============================================
 // DEMO DATA
 // ============================================
 const demoDogs = [
@@ -136,7 +410,7 @@ function toggleDarkMode() {
 // PROGRESS BAR
 // ============================================
 function updateProgressBar() {
-    const total = dogs.length;
+    const total = getMergedDogs().length;
     const scored = scores.length;
     const pct = total > 0 ? (scored / total) * 100 : 0;
     document.getElementById('progress-fill').style.width = pct + '%';
@@ -168,6 +442,7 @@ function updateSettingsDisplay() {
 // ============================================
 function refreshAll() {
     renderDogsList();
+    renderSheetDogs();
     updateDogSelect();
     renderLeaderboard();
     updateHeaderStats();
@@ -185,13 +460,18 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeApp() {
     initDarkMode();
     setupEventListeners();
+    loadCachedSheetData();
     updateHeaderStats();
     renderDogsList();
+    renderSheetDogs();
+    renderInfographic();
     updateDogSelect();
     renderLeaderboard();
     updateProgressBar();
     loadSettings();
     updateSettingsDisplay();
+    fetchSheetData();
+    startSheetAutoRefresh();
 }
 
 // ============================================
@@ -352,7 +632,7 @@ function setupEventListeners() {
 // HEADER STATS
 // ============================================
 function updateHeaderStats() {
-    document.getElementById('total-teams').textContent = dogs.length;
+    document.getElementById('total-teams').textContent = getMergedDogs().length;
     document.getElementById('completed-teams').textContent = scores.length;
 }
 
@@ -387,9 +667,10 @@ function handleRegistration(e) {
 
 function renderDogsList() {
     var container = document.getElementById('teams-container');
-    document.getElementById('team-count').textContent = dogs.length;
+    var merged = getMergedDogs();
+    document.getElementById('team-count').textContent = merged.length;
 
-    if (dogs.length === 0) {
+    if (merged.length === 0) {
         container.innerHTML =
             '<div class="empty-state">' +
                 '<div class="empty-state-icon">🐕</div>' +
@@ -398,11 +679,15 @@ function renderDogsList() {
         return;
     }
 
-    container.innerHTML = dogs.map(function(dog) {
-        return '<div class="team-card">' +
+    container.innerHTML = merged.map(function(dog) {
+        var isSheet = dog.source === 'sheet';
+        var badge = isSheet ? '<span class="sheet-badge-inline">Form</span>' : '';
+        var deleteBtn = isSheet ? '' :
+            '<button class="team-delete" onclick="deleteDog(' + dog.id + ')" title="ลบสุนัข">🗑️</button>';
+        return '<div class="team-card' + (isSheet ? ' sheet-origin' : '') + '">' +
             '<div class="team-card-header">' +
-                '<div class="team-name">' + dog.dogName + '</div>' +
-                '<button class="team-delete" onclick="deleteDog(' + dog.id + ')" title="ลบสุนัข">🗑️</button>' +
+                '<div class="team-name">' + dog.dogName + ' ' + badge + '</div>' +
+                deleteBtn +
             '</div>' +
             '<div class="team-info">' +
                 '<span>🐕 ' + dog.dogName + ' (' + dog.dogBreed + ')</span>' +
@@ -438,9 +723,10 @@ function saveDogs() {
 function updateDogSelect() {
     var select = document.getElementById('team-select');
     var scoredDogIds = scores.map(function(s) { return s.dogId; });
+    var merged = getMergedDogs();
 
     select.innerHTML = '<option value="">-- เลือกสุนัข --</option>' +
-        dogs
+        merged
             .filter(function(d) { return scoredDogIds.indexOf(d.id) === -1; })
             .map(function(dog) {
                 return '<option value="' + dog.id + '">' + dog.dogName + ' - ' + dog.handlerName + '</option>';
@@ -449,7 +735,7 @@ function updateDogSelect() {
 }
 
 function handleTeamSelect() {
-    var dogId = parseInt(document.getElementById('team-select').value);
+    var dogId = document.getElementById('team-select').value;
     var panel = document.getElementById('judging-panel');
 
     if (dogId) {
@@ -586,8 +872,10 @@ function calculateLiveScore() {
 // SAVE SCORE
 // ============================================
 function saveScore() {
-    var dogId = parseInt(document.getElementById('team-select').value);
-    var dog = dogs.find(function(d) { return d.id === dogId; });
+    var dogIdRaw = document.getElementById('team-select').value;
+    var dogId = dogIdRaw.startsWith('sheet-') ? dogIdRaw : parseInt(dogIdRaw);
+    var merged = getMergedDogs();
+    var dog = merged.find(function(d) { return d.id === dogId; });
 
     if (!dog) {
         showToast('กรุณาเลือกสุนัข', 'error');

@@ -85,16 +85,41 @@
 
         <!-- Main Content -->
         <main class="main-content">
+            <!-- ========== EVENT INFOGRAPHIC (collapsible) ========== -->
+            <section id="infographic-section" class="infographic-section" role="complementary" aria-label="ข้อมูลงาน">
+                <button class="infographic-toggle" id="infographic-toggle" onclick="toggleInfographic()">
+                    <span>📢 ข้อมูลงาน TWD 2026</span>
+                    <span class="toggle-arrow">▼</span>
+                </button>
+                <div id="infographic-content" class="infographic-content"></div>
+            </section>
+
             <!-- ========== REGISTER TAB ========== -->
             <section id="register-tab" class="tab-section active" role="tabpanel">
                 <div class="section-header">
                     <h2>📋 ลงทะเบียนสุนัข</h2>
-                    <p class="section-desc">ลงทะเบียนสุนัขและผู้ควบคุม (สูงสุด 20 สุนัข)</p>
+                    <p class="section-desc">ดูรายชื่อลงทะเบียนและเพิ่มสุนัขเพิ่มเติม</p>
+                </div>
+
+                <!-- Google Sheet Registrations -->
+                <div class="sheet-registrations-card">
+                    <div class="sheet-header">
+                        <h3>📋 ลงทะเบียนผ่าน Google Form</h3>
+                        <div class="sheet-controls">
+                            <span class="sheet-last-fetch" id="sheet-last-fetch"></span>
+                            <button class="icon-btn" onclick="fetchSheetData()" id="sheet-refresh-btn">🔄 รีเฟรช</button>
+                        </div>
+                    </div>
+                    <div class="sheet-status" id="sheet-status"></div>
+                    <div id="sheet-dogs-container" class="sheet-dogs-container"></div>
                 </div>
 
                 <div class="content-grid">
                     <div class="form-card">
-                        <h3>เพิ่มสุนัขใหม่</h3>
+                        <h3>✏️ เพิ่มสุนัขเอง</h3>
+                        <p class="section-desc" style="margin-bottom: 15px; font-size: 13px;">
+                            สำหรับสุนัขที่ไม่ได้ลงผ่านแบบฟอร์มออนไลน์
+                        </p>
                         <form id="registration-form">
                             <div class="input-group">
                                 <label for="dog-name">🐕 ชื่อสุนัข</label>
@@ -113,7 +138,7 @@
                     </div>
 
                     <div class="teams-list-card">
-                        <h3>รายชื่อสุนัข (<span id="team-count">0</span>/20)</h3>
+                        <h3>รายชื่อสุนัขทั้งหมด (<span id="team-count">0</span>)</h3>
                         <div id="teams-container" class="teams-container"></div>
                     </div>
                 </div>

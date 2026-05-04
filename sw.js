@@ -1,4 +1,4 @@
-const CACHE = 'k9-v3';
+const CACHE = 'k9-v4';
 const ASSETS = [
     '/',
     '/index.html',
@@ -25,6 +25,15 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
     if (e.request.method !== 'GET') return;
+
+    var url = new URL(e.request.url);
+    if (url.hostname === 'docs.google.com' || url.hostname === 'scontent.fbkk8-2.fna.fbcdn.net') {
+        e.respondWith(
+            fetch(e.request).catch(() => new Response('', { status: 503 }))
+        );
+        return;
+    }
+
     e.respondWith(
         caches.match(e.request).then(cached => {
             const fetched = fetch(e.request).then(response => {
