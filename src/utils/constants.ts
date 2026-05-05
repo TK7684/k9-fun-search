@@ -1,7 +1,7 @@
 import type { Settings } from '../types';
 
 export const SHEET_CSV_URL =
-  'https://docs.google.com/spreadsheets/d/10_3_PGs8rFhM-ZFhuWLwJimes9qK_5_GtDp6ipVMp80/export?format=csv&gid=1978864481';
+  'https://docs.google.com/spreadsheets/d/1sqGIsvbYL29iDXVO5dSa9KIglDqlqGJZqKIHMsXG5WI/export?format=csv&gid=1859063378';
 
 export const SHEET_REFRESH_INTERVAL = 5 * 60 * 1000;
 
