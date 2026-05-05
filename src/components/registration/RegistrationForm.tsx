@@ -10,7 +10,8 @@ export default function RegistrationForm() {
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
 
-    if (dogs.length >= 20) {
+    const manualDogCount = dogs.filter(d => typeof d.id === 'number').length;
+    if (manualDogCount >= 20) {
       showToast('เต็มจำนวนแล้ว (20 สุนัข)', 'error');
       return;
     }

@@ -126,6 +126,7 @@
     left: 1px;
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border: 2px solid var(--border-color);
 }
 
 .toggle-label input:checked + .toggle-slider {

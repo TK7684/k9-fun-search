@@ -48,5 +48,10 @@ body.dark .sheet-dog-card {
 }
 
 body.dark .info-logo {
-    border-color: #39FF14;
+    border-color: var(--success);
+}
+
+/* Dark mode toggle switch handle contrast */
+body.dark .toggle-slider::before {
+    border-color: var(--border-color);
 }

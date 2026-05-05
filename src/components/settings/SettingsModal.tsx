@@ -25,6 +25,26 @@ export default function SettingsModal({ active, onClose }: SettingsModalProps) {
   };
 
   const handleSave = () => {
+    const gradeFields: (keyof Settings)[] = ['gradeV', 'gradeSG', 'gradeG', 'gradeB', 'gradeM'];
+    for (const key of gradeFields) {
+      if (form[key] < 0 || form[key] > 100) {
+        showToast(`เกรดต้องอยู่ระหว่าง 0-100%`, 'error');
+        return;
+      }
+    }
+
+    const nonNegativeFields: (keyof Settings)[] = [
+      'vp1Points', 'vp2Points', 'vp3Points',
+      'attireRequired', 'attireBonus', 'attireMax',
+      'bonusVp1', 'bonusVp2', 'bonusAll', 'bonusDown',
+    ];
+    for (const key of nonNegativeFields) {
+      if (form[key] < 0) {
+        showToast(`ค่าไม่สามารถติดลบได้`, 'error');
+        return;
+      }
+    }
+
     updateSettings(form);
     showToast('บันทึกตั้งค่าสำเร็จ!', 'success');
     onClose();

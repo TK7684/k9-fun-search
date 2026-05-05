@@ -1,6 +1,11 @@
 import type { SheetDog } from '../types';
 
+const MAX_CSV_SIZE = 1 * 1024 * 1024; // 1 MB
+
 export function parseCSV(csvText: string): string[][] {
+  if (csvText.length > MAX_CSV_SIZE) {
+    throw new Error('ไฟล์ CSV มีขนาดใหญ่เกินไป (เกิน 1 MB)');
+  }
   const rows: string[][] = [];
   let row: string[] = [];
   let cell = '';

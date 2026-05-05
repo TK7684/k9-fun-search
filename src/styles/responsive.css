@@ -1,4 +1,37 @@
 /* ========== Responsive ========== */
+
+/* ========== Tablet breakpoint ========== */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .main-content {
+        padding: 24px;
+    }
+
+    .vp-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .checklist-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .score-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .timer-display {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .timer-controls {
+        justify-content: center;
+    }
+}
+
 @media (max-width: 768px) {
     body {
         padding: 10px;
@@ -73,8 +106,8 @@
     .checklist-item { padding: 14px 10px; }
 
     .checklist-item input[type="checkbox"] {
-        width: 28px;
-        height: 28px;
+        width: 44px;
+        height: 44px;
     }
 
     .toggle-slider {
@@ -124,7 +157,7 @@
     .delete-btn {
         padding: 10px 14px;
         font-size: 13px;
-        min-height: 44px;
+        min-height: 56px;
     }
 
     .toast {
@@ -167,7 +200,7 @@
 }
 
 @media (max-width: 380px) {
-    .timer-value { font-size: 36px; }
+    .timer-value { font-size: 42px; }
     .score-grid { grid-template-columns: 1fr; }
     .header-stats { flex-direction: column; width: 100%; }
     .stat-card { width: 100%; justify-content: center; }

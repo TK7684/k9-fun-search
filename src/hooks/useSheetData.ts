@@ -13,13 +13,19 @@ export function useSheetData() {
   const [isFetching, setIsFetching] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const fetchSheetData = useCallback(async () => {
+    // Abort any in-flight fetch
+    if (abortRef.current) abortRef.current.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     setIsFetching(true);
     setFetchError(null);
 
     try {
-      const response = await fetch(SHEET_CSV_URL, { cache: 'no-store' });
+      const response = await fetch(SHEET_CSV_URL, { cache: 'no-store', signal: controller.signal });
       if (!response.ok) throw new Error('HTTP ' + response.status);
 
       const text = await response.text();
@@ -45,10 +51,13 @@ export function useSheetData() {
       saveToStorage(DOGS_KEY, dogs);
       localStorage.setItem(FETCH_KEY, now);
     } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
       const message = err instanceof Error ? err.message : 'Unknown error';
       setFetchError(message);
     } finally {
-      setIsFetching(false);
+      if (abortRef.current === controller) {
+        setIsFetching(false);
+      }
     }
   }, []);
 
@@ -60,6 +69,7 @@ export function useSheetData() {
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
+      if (abortRef.current) abortRef.current.abort();
     };
   }, [fetchSheetData]);
 

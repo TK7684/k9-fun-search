@@ -13,8 +13,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
-    background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
-    color: #fff;
+    background: linear-gradient(135deg, var(--dark) 0%, #1a1a1a 100%);
+    color: #ffffff;
     border: none;
     cursor: pointer;
     font-family: 'Kanit', sans-serif;
@@ -28,7 +28,7 @@
 }
 
 .toggle-arrow {
-    color: #39FF14;
+    color: var(--success);
     font-size: 12px;
     transition: transform 0.3s;
 }
@@ -47,8 +47,8 @@
     align-items: center;
     gap: 20px;
     padding: 24px;
-    background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
-    color: #fff;
+    background: linear-gradient(135deg, var(--dark) 0%, #1a1a1a 100%);
+    color: #ffffff;
 }
 
 .info-logo {
@@ -56,18 +56,18 @@
     height: 90px;
     border-radius: 12px;
     object-fit: cover;
-    border: 2px solid #39FF14;
+    border: 2px solid var(--success);
     flex-shrink: 0;
 }
 
 .info-title-block h2 {
-    color: #39FF14;
+    color: var(--success);
     font-size: 20px;
     margin: 0 0 4px;
 }
 
 .info-title-block .info-subtitle {
-    color: #ccc;
+    color: #e2e8f0;
     font-size: 13px;
     margin: 0;
 }

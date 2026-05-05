@@ -210,5 +210,5 @@
 
 .team-card.sheet-origin {
     border-left: 4px solid var(--success);
-    opacity: 0.9;
+    opacity: 1.0;
 }

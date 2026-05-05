@@ -88,9 +88,8 @@ export function useScores() {
         bonusScore: updates.bonusScore ?? existing.bonusScore,
         timeInSeconds: updates.timeInSeconds ?? existing.timeInSeconds,
         notes: updates.notes ?? existing.notes,
-        totalScore: 0,
+        totalScore: (updates.vpScore ?? existing.vpScore) + (updates.attireScore ?? existing.attireScore) + (updates.bonusScore ?? existing.bonusScore),
       };
-      updated.totalScore = updated.vpScore + updated.attireScore + updated.bonusScore;
 
       const next = [...scores];
       next[idx] = updated;

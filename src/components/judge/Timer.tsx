@@ -1,3 +1,5 @@
+import React from 'react';
+
 interface TimerProps {
   seconds: number;
   isRunning: boolean;
@@ -12,7 +14,7 @@ function formatTime(totalSeconds: number): string {
   return String(minutes).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
 }
 
-export default function Timer({ seconds, isRunning, onStart, onPause, onReset }: TimerProps) {
+function Timer({ seconds, isRunning, onStart, onPause, onReset }: TimerProps) {
   return (
     <div className="timer-card">
       <h3>⏱️ เวลา</h3>
@@ -44,3 +46,5 @@ export default function Timer({ seconds, isRunning, onStart, onPause, onReset }:
     </div>
   );
 }
+
+export default React.memo(Timer);

@@ -115,6 +115,11 @@ export default function JudgeTab() {
       return;
     }
 
+    if (!dog.dogName || !dog.dogBreed || !dog.handlerName) {
+      showToast('ข้อมูลสุนัขไม่ครบถ้วน กรุณาตรวจสอบ', 'error');
+      return;
+    }
+
     saveScore(dog, vpState, attireState, bonusState, settings, timer.seconds, notes);
 
     showToast('บันทึกคะแนนสำเร็จ! 🎉', 'success');
