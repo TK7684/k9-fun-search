@@ -1,0 +1,217 @@
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+        padding-bottom: 90px;
+    }
+
+    .main-header,
+    .main-content {
+        border-radius: var(--radius-lg);
+        padding: 20px;
+    }
+
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .header-right {
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+    }
+
+    .logo-section { flex-direction: column; }
+
+    .header-stats {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .quick-actions { display: none; }
+    .mobile-nav { display: flex; }
+
+    .sticky-score-bar {
+        padding: 12px 16px;
+        top: 0;
+    }
+
+    .sticky-score-value { font-size: 32px; }
+
+    .sticky-score-breakdown {
+        width: 100%;
+        justify-content: space-around;
+    }
+
+    .breakdown-item {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+
+    .action-btn,
+    .submit-btn,
+    .timer-btn,
+    .icon-btn {
+        min-height: 56px;
+        min-width: 56px;
+    }
+
+    .timer-display { flex-direction: column; }
+    .timer-value { font-size: 42px; }
+
+    .timer-btn {
+        padding: 14px 24px;
+        font-size: 15px;
+    }
+
+    .content-grid,
+    .checklist-grid,
+    .settings-grid { grid-template-columns: 1fr; }
+    .vp-grid { grid-template-columns: 1fr; }
+
+    .checklist-item { padding: 14px 10px; }
+
+    .checklist-item input[type="checkbox"] {
+        width: 28px;
+        height: 28px;
+    }
+
+    .toggle-slider {
+        width: 60px;
+        height: 34px;
+    }
+
+    .toggle-slider::before {
+        width: 26px;
+        height: 26px;
+        top: 2px;
+        left: 2px;
+    }
+
+    .toggle-label input:checked + .toggle-slider::before {
+        transform: translateX(26px);
+    }
+
+    .input-group input,
+    .input-group select,
+    .team-select {
+        padding: 14px 16px;
+        font-size: 16px;
+    }
+
+    .leaderboard-item {
+        flex-direction: column;
+        text-align: center;
+        padding: 16px;
+    }
+
+    .leaderboard-score { text-align: center; }
+
+    .score-grid { grid-template-columns: repeat(2, 1fr); }
+    .score-value { font-size: 24px; }
+    .score-value.total { font-size: 32px; }
+
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+        max-height: 85vh;
+    }
+
+    .vp-item { padding: 16px; }
+
+    .edit-btn,
+    .delete-btn {
+        padding: 10px 14px;
+        font-size: 13px;
+        min-height: 44px;
+    }
+
+    .toast {
+        left: 20px;
+        right: 20px;
+        bottom: 100px;
+        transform: translateY(200px);
+    }
+
+    .toast.active { transform: translateY(0); }
+
+    .info-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+
+    .info-logo {
+        width: 70px;
+        height: 70px;
+    }
+
+    .info-title-block h2 {
+        font-size: 17px;
+    }
+
+    .info-grid {
+        padding: 16px;
+        grid-template-columns: 1fr;
+    }
+
+    .info-timeline {
+        padding: 16px;
+    }
+
+    .sheet-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 380px) {
+    .timer-value { font-size: 36px; }
+    .score-grid { grid-template-columns: 1fr; }
+    .header-stats { flex-direction: column; width: 100%; }
+    .stat-card { width: 100%; justify-content: center; }
+}
+
+/* ========== Print Styles ========== */
+@media print {
+    .quick-actions,
+    .mobile-nav,
+    .timer-card,
+    .vp-scoring-card,
+    .quick-checklist-card,
+    .action-buttons,
+    .notes-card,
+    .sticky-score-bar,
+    .live-score-card,
+    .confetti-container,
+    .modal,
+    .toast,
+    .icon-btn-round,
+    .progress-bar-container,
+    .leaderboard-actions { display: none !important; }
+
+    body {
+        background: white !important;
+        padding: 0 !important;
+        color: black !important;
+    }
+
+    .main-header,
+    .main-content {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        background: white !important;
+    }
+
+    .leaderboard-item { break-inside: avoid; border: 1px solid #ddd; }
+    .stat-card { background: #f3f4f6 !important; color: black !important; }
+}
+
+/* ========== Reduced Motion ========== */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

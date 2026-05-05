@@ -1,0 +1,52 @@
+/* ========== Dark Mode ========== */
+body.dark {
+    --bg-body-start: #0f172a;
+    --bg-body-end: #1e1b4b;
+    --bg-card: #1e293b;
+    --bg-card-alt: #334155;
+    --bg-input: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --text-inverse: #1e293b;
+    --border-color: #475569;
+    --shadow: rgba(0, 0, 0, 0.3);
+    --shadow-lg: rgba(0, 0, 0, 0.4);
+    --primary: #818cf8;
+    --primary-dark: #6366f1;
+    --secondary: #a78bfa;
+    --success: #34d399;
+    --success-dark: #10b981;
+    --warning: #fbbf24;
+    --danger: #f87171;
+    --info: #60a5fa;
+    --light: #334155;
+    --dark: #f1f5f9;
+    --gradient-primary: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+    --gradient-success: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+}
+
+/* Dark mode variants */
+body.dark .info-card {
+    background: #1e1b4b;
+}
+
+body.dark .info-timeline {
+    border-top-color: #312e81;
+}
+
+body.dark .timeline-item {
+    background: #1e1b4b;
+}
+
+body.dark .sheet-registrations-card {
+    border-color: #818cf8;
+}
+
+body.dark .sheet-dog-card {
+    background: #1e1b4b;
+}
+
+body.dark .info-logo {
+    border-color: #39FF14;
+}

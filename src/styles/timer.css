@@ -1,0 +1,83 @@
+/* ========== Timer Card ========== */
+.timer-card {
+    background: var(--gradient-primary);
+    padding: 25px;
+    border-radius: var(--radius-lg);
+    color: var(--text-inverse);
+    margin-bottom: 25px;
+}
+
+.timer-card h3 { margin-bottom: 20px; }
+
+.timer-display {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.timer-value {
+    font-size: 56px;
+    font-weight: 700;
+    font-family: 'Courier New', Consolas, monospace;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.timer-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.timer-btn {
+    padding: 16px 24px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-lg);
+    font-size: 18px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.25);
+    color: var(--text-inverse);
+    min-width: 120px;
+    min-height: 64px;
+}
+
+.timer-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.timer-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Notes Card */
+.notes-card {
+    background: var(--bg-card-alt);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 25px;
+}
+
+.notes-card h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+    color: var(--text-primary);
+}
+
+.notes-card textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 80px;
+    background: var(--bg-input);
+    color: var(--text-primary);
+}

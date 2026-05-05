@@ -1,0 +1,92 @@
+/* ========== Desktop Navigation ========== */
+.quick-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.action-btn {
+    flex: 1;
+    min-width: 160px;
+    padding: 20px 25px;
+    background: var(--bg-card);
+    border: 3px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: inherit;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px var(--shadow);
+    min-height: 70px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px var(--shadow-lg);
+    border-color: var(--primary);
+}
+
+.action-btn:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px var(--shadow);
+}
+
+.action-btn.active {
+    background: var(--gradient-primary);
+    color: var(--text-inverse);
+    border-color: var(--primary);
+}
+
+.btn-icon { font-size: 28px; }
+
+/* ========== Mobile Bottom Navigation ========== */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg-card);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    padding: 8px 0;
+    border-top-left-radius: var(--radius-xl);
+    border-top-right-radius: var(--radius-xl);
+}
+
+.mobile-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px 4px;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-nav-item .nav-icon {
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+
+.mobile-nav-item.active {
+    color: var(--primary);
+}
+
+.mobile-nav-item:active {
+    transform: scale(0.95);
+}

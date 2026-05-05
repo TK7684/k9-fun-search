@@ -1,0 +1,93 @@
+/* ========== Sticky Score Bar ========== */
+.sticky-score-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.3);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.sticky-score-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sticky-label {
+    font-size: 12px;
+    opacity: 0.9;
+    color: var(--text-inverse);
+}
+
+.sticky-score-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text-inverse);
+    line-height: 1;
+}
+
+.sticky-score-breakdown {
+    display: flex;
+    gap: 15px;
+}
+
+.breakdown-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-inverse);
+}
+
+.breakdown-icon { font-size: 16px; }
+
+/* ========== Live Score Card ========== */
+.live-score-card {
+    background: var(--gradient-primary);
+    padding: 25px;
+    border-radius: var(--radius-lg);
+    color: var(--text-inverse);
+    margin-bottom: 25px;
+}
+
+.live-score-card h3 { margin-bottom: 20px; }
+
+.score-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+}
+
+.score-item {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.score-label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 8px;
+    opacity: 0.9;
+}
+
+.score-value {
+    display: block;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.score-value.total { font-size: 36px; }
