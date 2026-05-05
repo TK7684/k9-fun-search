@@ -1,12 +1,7 @@
 import { useApp } from '../../context/AppContext';
 
 export default function DesktopNav() {
-  const { activeTab, setActiveTab, leaderboardRef } = useApp();
-
-  function handleLeaderboardClick() {
-    setActiveTab('judge');
-    leaderboardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+  const { activeTab, setActiveTab } = useApp();
 
   return (
     <div className="quick-actions">
@@ -25,11 +20,18 @@ export default function DesktopNav() {
         <span>คิดคะแนน</span>
       </button>
       <button
-        className="action-btn"
-        onClick={handleLeaderboardClick}
+        className={`action-btn${activeTab === 'leaderboard' ? ' active' : ''}`}
+        onClick={() => setActiveTab('leaderboard')}
       >
         <span className="btn-icon">🏆</span>
         <span>ตารางคะแนน</span>
+      </button>
+      <button
+        className={`action-btn${activeTab === 'settings' ? ' active' : ''}`}
+        onClick={() => setActiveTab('settings')}
+      >
+        <span className="btn-icon">⚙️</span>
+        <span>ตั้งค่า</span>
       </button>
     </div>
   );

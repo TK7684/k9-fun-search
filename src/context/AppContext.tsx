@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useRef, type ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { MergedDog } from '../types';
 import { useDogs } from '../hooks/useDogs';
 import { useScores } from '../hooks/useScores';
@@ -11,7 +11,7 @@ import { useToast, type ToastState } from '../hooks/useToast';
 
 export type { ToastState };
 
-type ActiveTab = 'register' | 'judge';
+type ActiveTab = 'register' | 'judge' | 'leaderboard' | 'settings';
 
 export interface AppContextType {
   // Dogs
@@ -61,11 +61,8 @@ export interface AppContextType {
   // Navigation / UI state
   activeTab: ActiveTab;
   setActiveTab: (tab: ActiveTab) => void;
-  showSettings: boolean;
-  setShowSettings: (show: boolean) => void;
   editingScoreId: number | null;
   setEditingScoreId: (id: number | null) => void;
-  leaderboardRef: React.RefObject<HTMLDivElement | null>;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -82,9 +79,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const mergedDogs = useMergedDogs(dogsApi.dogs, sheetApi.sheetDogs);
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('register');
-  const [showSettings, setShowSettings] = useState(false);
   const [editingScoreId, setEditingScoreId] = useState<number | null>(null);
-  const leaderboardRef = useRef<HTMLDivElement | null>(null);
 
   const value: AppContextType = {
     // Dogs
@@ -134,11 +129,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // Navigation / UI state
     activeTab,
     setActiveTab,
-    showSettings,
-    setShowSettings,
     editingScoreId,
     setEditingScoreId,
-    leaderboardRef,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

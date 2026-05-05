@@ -8,8 +8,6 @@ export default function Header() {
     darkMode,
     setDogsWithUndo,
     showToast,
-    showSettings,
-    setShowSettings,
   } = useApp();
 
   const totalDogs = mergedDogs.length;
@@ -64,13 +62,6 @@ export default function Header() {
               aria-label="ข้อมูลตัวอย่าง"
             >
               🎮
-            </button>
-            <button
-              className="icon-btn-round"
-              onClick={() => setShowSettings(!showSettings)}
-              aria-label="ตั้งค่า"
-            >
-              ⚙️
             </button>
           </div>
         </div>

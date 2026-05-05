@@ -1,12 +1,7 @@
 import { useApp } from '../../context/AppContext';
 
 export default function MobileNav() {
-  const { activeTab, setActiveTab, setShowSettings, leaderboardRef } = useApp();
-
-  function handleLeaderboardClick() {
-    setActiveTab('judge');
-    leaderboardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
+  const { activeTab, setActiveTab } = useApp();
 
   return (
     <nav className="mobile-nav">
@@ -25,15 +20,15 @@ export default function MobileNav() {
         <span className="nav-label">คิดคะแนน</span>
       </button>
       <button
-        className="mobile-nav-item"
-        onClick={handleLeaderboardClick}
+        className={`mobile-nav-item${activeTab === 'leaderboard' ? ' active' : ''}`}
+        onClick={() => setActiveTab('leaderboard')}
       >
         <span className="nav-icon">🏆</span>
         <span className="nav-label">ตารางคะแนน</span>
       </button>
       <button
-        className="mobile-nav-item"
-        onClick={() => setShowSettings(true)}
+        className={`mobile-nav-item${activeTab === 'settings' ? ' active' : ''}`}
+        onClick={() => setActiveTab('settings')}
       >
         <span className="nav-icon">⚙️</span>
         <span className="nav-label">ตั้งค่า</span>
