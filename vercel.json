@@ -1,4 +1,10 @@
 {
   "buildCommand": "npm run build",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "functions": {
+    "api/*.ts": { "runtime": "@vercel/node@5" }
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/$1" }
+  ]
 }
