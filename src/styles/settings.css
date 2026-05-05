@@ -51,3 +51,44 @@
     display: flex;
     gap: 15px;
 }
+
+/* ========== Point Reference Table ========== */
+.point-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.point-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.point-table th,
+.point-table td {
+    padding: 6px 8px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.point-table th {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.point-table td:first-child {
+    text-align: left;
+    font-weight: 600;
+}
+
+.point-table tbody tr:hover {
+    background: var(--bg-hover);
+}
+
+.setting-value {
+    font-size: 14px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}

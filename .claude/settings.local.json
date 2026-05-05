@@ -6,7 +6,9 @@
       "Bash(node *)",
       "Bash(curl -s http://localhost:8000/)",
       "Bash(git init *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(mkdir -p ~/.claude/skills/ui-ux-pro-max)",
+      "Bash(cp -r /tmp/ui-ux-pro-max-skill/src/ui-ux-pro-max/* ~/.claude/skills/ui-ux-pro-max/)"
     ]
   }
 }
