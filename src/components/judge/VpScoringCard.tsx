@@ -9,9 +9,9 @@ interface VpScoringCardProps {
 }
 
 const VP_CONFIG: { num: 1 | 2 | 3; label: string; difficulty: 'easy' | 'medium' | 'hard'; pointsKey: 'vp1Points' | 'vp2Points' | 'vp3Points' }[] = [
-  { num: 1, label: 'VP1 — เหยื่อง่าย', difficulty: 'easy', pointsKey: 'vp1Points' },
-  { num: 2, label: 'VP2 — เหยื่อปานกลาง', difficulty: 'medium', pointsKey: 'vp2Points' },
-  { num: 3, label: 'VP3 — เหยื่อยาก', difficulty: 'hard', pointsKey: 'vp3Points' },
+  { num: 1, label: 'VP1 — เปิด (Open hide)', difficulty: 'easy', pointsKey: 'vp1Points' },
+  { num: 2, label: 'VP2 — สูง (High hide)', difficulty: 'medium', pointsKey: 'vp2Points' },
+  { num: 3, label: 'VP3 — ปิด (Closed hide)', difficulty: 'hard', pointsKey: 'vp3Points' },
 ];
 
 export default function VpScoringCard({

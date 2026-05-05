@@ -10,8 +10,8 @@ interface ChecklistCardProps {
 
 const ATTIRE_ITEMS: { key: keyof AttireState; label: string; icon: string; required: boolean }[] = [
   { key: 'shoes', label: 'รองเท้า', icon: '👟', required: true },
-  { key: 'shirt', label: 'เสื้อ', icon: '👕', required: true },
-  { key: 'pants', label: 'กางเกง', icon: '👖', required: true },
+  { key: 'shirt', label: 'เสื้อแขนยาว', icon: '👕', required: true },
+  { key: 'pants', label: 'กางเกงขายาว', icon: '👖', required: true },
   { key: 'hat', label: 'หมวก', icon: '🧢', required: false },
   { key: 'gloves', label: 'ถุงมือ', icon: '🧤', required: false },
 ];
@@ -20,7 +20,7 @@ const BONUS_ITEMS: { key: keyof BonusState; label: string; icon: string; setting
   { key: 'vp1', label: 'พบ VP1 ใน 1 นาที', icon: '⚡', settingsKey: 'bonusVp1' },
   { key: 'vp2', label: 'พบ VP2 ใน 2 นาที', icon: '⚡', settingsKey: 'bonusVp2' },
   { key: 'allFound', label: 'พบทั้ง 3 VP ใน 3 นาที', icon: '🏆', settingsKey: 'bonusAll' },
-  { key: 'down', label: 'คำสั่ง Down', icon: '🐕', settingsKey: 'bonusDown' },
+  { key: 'down', label: 'เรียกกลับ + หมอบรอ', icon: '🐕', settingsKey: 'bonusDown' },
 ];
 
 export default function ChecklistCard({
@@ -35,7 +35,7 @@ export default function ChecklistCard({
       <h3>✅ รายการตรวจสอบ</h3>
       <div className="checklist-grid">
         <div className="checklist-section">
-          <h4>👕 การแต่งกาย</h4>
+          <h4>👕 การแต่งกาย (ตรวจก่อนเริ่ม)</h4>
           <div className="checklist-items">
             {ATTIRE_ITEMS.map(({ key, label, icon, required }) => (
               <label className="checklist-item" key={key}>
@@ -56,7 +56,7 @@ export default function ChecklistCard({
         </div>
 
         <div className="checklist-section">
-          <h4>🎁 โบนัสพิเศษ</h4>
+          <h4>🎁 คะแนนพิเศษ + การเชื่อฟัง</h4>
           <div className="checklist-items">
             {BONUS_ITEMS.map(({ key, label, icon, settingsKey }) => (
               <label className="checklist-item" key={key}>

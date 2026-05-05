@@ -17,11 +17,19 @@ export function calculateLiveScore(
   };
 
   const gradePercentages: Record<string, number> = {
-    V: settings.gradeV / 100,
-    SG: settings.gradeSG / 100,
-    G: settings.gradeG / 100,
-    B: settings.gradeB / 100,
-    M: settings.gradeM / 100,
+    'V': settings.gradeV / 100,
+    'V-': (settings.gradeV - 4) / 100,
+    'SG+': (settings.gradeSG + 3) / 100,
+    'SG': settings.gradeSG / 100,
+    'SG-': (settings.gradeSG - 2) / 100,
+    'G+': (settings.gradeG + 4) / 100,
+    'G': settings.gradeG / 100,
+    'G-': (settings.gradeG - 4) / 100,
+    'B+': (settings.gradeB + 5) / 100,
+    'B': settings.gradeB / 100,
+    'B-': (settings.gradeB - 4) / 100,
+    'M+': 0,
+    'M-': 0,
   };
 
   let vpScore = 0;

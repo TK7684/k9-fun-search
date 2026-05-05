@@ -1,24 +1,25 @@
 /* ========== Leaderboard ========== */
 .leaderboard-actions {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
 }
 
 .icon-btn {
-    padding: 14px 20px;
+    padding: 10px 14px;
     background: var(--bg-card-alt);
-    border: 3px solid var(--border-color);
+    border: 2px solid var(--border-color);
     border-radius: var(--radius-md);
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 16px;
+    gap: 6px;
+    font-size: 14px;
     font-weight: 600;
     font-family: inherit;
     transition: all 0.2s ease;
-    min-height: 56px;
+    min-height: 44px;
     color: var(--text-primary);
 }
 
@@ -37,125 +38,229 @@
     color: var(--text-inverse);
 }
 
+/* Compact leaderboard rows */
 .leaderboard-table {
-    background: var(--bg-card-alt);
-    border-radius: var(--radius-lg);
-    padding: 20px;
-    overflow-x: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.leaderboard-item {
+.lb-row {
     background: var(--bg-card);
-    padding: 20px;
-    border-radius: var(--radius-md);
-    margin-bottom: 12px;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.15s;
+}
+
+.lb-row:active {
+    background: var(--bg-card-alt);
+}
+
+.lb-main {
     display: flex;
     align-items: center;
-    gap: 15px;
-    transition: all 0.3s ease;
+    gap: 10px;
+    padding: 8px 12px;
+    min-height: 52px;
 }
 
-.leaderboard-item:hover {
-    transform: translateX(5px);
-    box-shadow: 0 4px 15px var(--shadow);
-}
-
-.leaderboard-rank {
-    width: 50px;
-    height: 50px;
+/* Rank badge */
+.lb-rank {
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 14px;
     font-weight: 700;
     flex-shrink: 0;
 }
 
-.leaderboard-rank.rank-1 {
-    background: linear-gradient(135deg, var(--warning) 0%, var(--warning) 100%);
-    color: white;
+.lb-rank.rank-1 {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #fff;
+    box-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
 }
 
-.leaderboard-rank.rank-2 {
-    background: linear-gradient(135deg, var(--text-secondary) 0%, var(--text-muted) 100%);
-    color: white;
+.lb-rank.rank-2 {
+    background: linear-gradient(135deg, #9ca3af, #6b7280);
+    color: #fff;
 }
 
-.leaderboard-rank.rank-3 {
-    background: linear-gradient(135deg, var(--danger) 0%, var(--danger) 100%);
-    color: white;
+.lb-rank.rank-3 {
+    background: linear-gradient(135deg, #f87171, #dc2626);
+    color: #fff;
 }
 
-.leaderboard-rank.rank-other {
+.lb-rank.rank-other {
     background: var(--bg-card-alt);
-    color: var(--text-primary);
-}
-
-.leaderboard-info { flex: 1; }
-
-.leaderboard-team {
-    font-weight: 600;
-    font-size: 16px;
-    color: var(--text-primary);
-    margin-bottom: 5px;
-}
-
-.leaderboard-details {
-    font-size: 13px;
     color: var(--text-secondary);
 }
 
-.leaderboard-score { text-align: right; }
+/* Center info */
+.lb-center {
+    flex: 1;
+    min-width: 0;
+}
 
-.leaderboard-total {
-    font-size: 24px;
+.lb-name {
     font-weight: 700;
+    font-size: 15px;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.lb-meta {
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 1px;
+}
+
+/* Score column */
+.lb-score-col {
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.lb-total {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary);
+    line-height: 1.1;
+}
+
+.lb-sub {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 1px;
+}
+
+/* Expanded details */
+.lb-expanded {
+    padding: 8px 12px 10px;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-card-alt);
+}
+
+.lb-vp-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.lb-vp {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 4px;
+    border-radius: 8px;
+    background: var(--bg-card);
+    gap: 2px;
+}
+
+.lb-vp-miss {
+    opacity: 0.4;
+}
+
+.lb-vp-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.lb-vp-grade {
+    font-size: 16px;
+    font-weight: 800;
     color: var(--primary);
 }
 
-.leaderboard-bonus {
-    font-size: 12px;
-    color: var(--success);
+.lb-vp-pts {
+    font-size: 11px;
+    color: var(--text-secondary);
 }
 
-.leaderboard-actions-btn {
+/* Action buttons */
+.lb-actions {
     display: flex;
-    gap: 5px;
+    gap: 8px;
 }
 
-.edit-btn,
-.delete-btn {
-    padding: 16px 22px;
+.lb-edit-btn,
+.lb-del-btn {
+    flex: 1;
+    padding: 10px;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     font-family: inherit;
-    transition: all 0.2s ease;
-    min-height: 56px;
+    min-height: 44px;
     -webkit-tap-highlight-color: transparent;
 }
 
-.edit-btn {
+.lb-edit-btn {
     background: var(--info);
-    color: white;
+    color: #fff;
 }
 
-.edit-btn:hover {
-    background: var(--info);
-    filter: brightness(0.85);
-    transform: translateY(-1px);
+.lb-del-btn {
+    background: transparent;
+    color: var(--danger);
+    border: 2px solid var(--danger);
 }
 
-.delete-btn {
-    background: var(--danger);
-    color: white;
+/* Top 3 row highlight */
+.lb-row:nth-child(1) .lb-main,
+.lb-row:nth-child(2) .lb-main,
+.lb-row:nth-child(3) .lb-main {
+    padding: 10px 12px;
 }
 
-.delete-btn:hover {
-    background: var(--danger);
-    filter: brightness(0.85);
-    transform: translateY(-1px);
+.lb-row:nth-child(1) .lb-name { font-size: 16px; }
+.lb-row:nth-child(1) .lb-total { font-size: 22px; }
+
+/* Desktop wider layout */
+@media (min-width: 768px) {
+    .lb-main {
+        padding: 10px 16px;
+        gap: 14px;
+    }
+
+    .lb-rank {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .lb-name {
+        font-size: 16px;
+    }
+
+    .lb-total {
+        font-size: 24px;
+    }
+
+    .lb-meta {
+        font-size: 12px;
+    }
+
+    .leaderboard-actions {
+        gap: 10px;
+    }
+
+    .icon-btn {
+        padding: 12px 18px;
+        font-size: 15px;
+        min-height: 48px;
+    }
 }
