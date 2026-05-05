@@ -180,6 +180,15 @@ export function useScores() {
     return syncScoresToSheet(scores);
   }, [scores]);
 
+  const setScoresWithUndo = useCallback(
+    (newScores: Score[]) => {
+      const prev = scores;
+      persist(newScores);
+      return { undo: () => persist(prev) };
+    },
+    [scores],
+  );
+
   const getSortedScores = useCallback(
     () =>
       [...scores].sort((a, b) => {
@@ -202,6 +211,7 @@ export function useScores() {
     deleteScoresByDogId,
     clearAll,
     manualSync,
+    setScoresWithUndo,
     setSyncErrorHandler,
     getSortedScores,
     scoredDogIds,

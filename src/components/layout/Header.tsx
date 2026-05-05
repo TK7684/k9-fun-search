@@ -1,5 +1,5 @@
 import { useApp } from '../../context/AppContext';
-import { demoDogs } from '../../utils/demoData';
+import { demoDogs, demoScores } from '../../utils/demoData';
 
 export default function Header() {
   const {
@@ -7,6 +7,7 @@ export default function Header() {
     scores,
     darkMode,
     setDogsWithUndo,
+    setScoresWithUndo,
     showToast,
   } = useApp();
 
@@ -16,7 +17,8 @@ export default function Header() {
 
   function handleLoadDemo() {
     setDogsWithUndo(demoDogs);
-    showToast('โหลดข้อมูลสาธิตสำเร็จ!', 'success');
+    setScoresWithUndo(demoScores);
+    showToast(`โหลดข้อมูลสาธิตสำเร็จ! ${demoDogs.length} สุนัข, ${demoScores.length} คะแนน`, 'success');
   }
 
   return (

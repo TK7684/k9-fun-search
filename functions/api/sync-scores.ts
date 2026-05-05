@@ -1,5 +1,5 @@
 const SCORES_SHEET_URL =
-  'https://script.google.com/macros/s/AKfycbylJ2fe32lDVft5StZnHUJg6aFQBqwjYoq37FveObmXbqKHOxpVWYGNNVLp92RvtaDBrA/exec';
+  'https://script.google.com/macros/s/AKfycbw9icHUsWIn4MHejVhlGHDsZN3KRBNY9qC18KlO45a4WQWVmu1aSFRadGLXdG0iE1eD_A/exec';
 
 export const onRequestOptions: PagesFunction = () =>
   new Response(null, {
