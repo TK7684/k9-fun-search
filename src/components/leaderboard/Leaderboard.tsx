@@ -1,33 +1,17 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { exportCSV } from '../../utils/exportCsv';
 import LeaderboardItem from './LeaderboardItem';
 import LeaderboardActions from './LeaderboardActions';
 import EditScoreModal from './EditScoreModal';
 
 export default function Leaderboard() {
-  const { scores, deleteScoreWithUndo, showToast, setEditingScoreId } = useApp();
+  const { scores, deleteScoreWithUndo, setEditingScoreId } = useApp();
   const [editId, setEditId] = useState<number | null>(null);
 
   const sortedScores = [...scores].sort((a, b) => {
     if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
     return a.timeInSeconds - b.timeInSeconds;
   });
-
-  const handleExport = () => {
-    if (scores.length === 0) {
-      showToast('ไม่มีข้อมูลสำหรับส่งออก', 'error');
-      return;
-    }
-    exportCSV(scores);
-    showToast('ส่งออก CSV สำเร็จ!', 'success');
-  };
-
-  const handleClearAll = () => {
-    // Double confirmation is handled inside LeaderboardActions
-    // This callback fires only after both confirms pass
-    showToast('ลบข้อมูลทั้งหมดเรียบร้อย', 'success');
-  };
 
   const handleEdit = (id: number) => {
     setEditId(id);
@@ -43,7 +27,7 @@ export default function Leaderboard() {
     <div id="dashboard" className="dashboard-section">
       <h2>🏆 ตารางคะแนนสุนัข</h2>
 
-      <LeaderboardActions onExport={handleExport} onClearAll={handleClearAll} />
+      <LeaderboardActions />
 
       {scores.length === 0 ? (
         <div className="empty-state">

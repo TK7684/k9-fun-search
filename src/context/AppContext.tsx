@@ -27,6 +27,7 @@ export interface AppContextType {
   deleteScoreWithUndo: ReturnType<typeof useScores>['deleteScoreWithUndo'];
   deleteScoresByDogId: ReturnType<typeof useScores>['deleteScoresByDogId'];
   clearAllScores: ReturnType<typeof useScores>['clearAll'];
+  manualSync: ReturnType<typeof useScores>['manualSync'];
   getSortedScores: ReturnType<typeof useScores>['getSortedScores'];
   scoredDogIds: ReturnType<typeof useScores>['scoredDogIds'];
 
@@ -95,6 +96,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     deleteScoreWithUndo: scoresApi.deleteScoreWithUndo,
     deleteScoresByDogId: scoresApi.deleteScoresByDogId,
     clearAllScores: scoresApi.clearAll,
+    manualSync: scoresApi.manualSync,
     getSortedScores: scoresApi.getSortedScores,
     scoredDogIds: scoresApi.scoredDogIds,
 
