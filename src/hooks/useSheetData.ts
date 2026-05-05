@@ -52,7 +52,7 @@ export function useSheetData() {
       localStorage.setItem(FETCH_KEY, now);
     } catch (err) {
       if (err instanceof DOMException && err.name === 'AbortError') return;
-      const message = err instanceof Error ? err.message : 'Unknown error';
+      const message = err instanceof Error ? err.message : 'ไม่สามารถโหลดข้อมูล';
       setFetchError(message);
     } finally {
       if (abortRef.current === controller) {

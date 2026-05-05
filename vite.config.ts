@@ -27,7 +27,11 @@ export default defineConfig({
       workbox: {
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/docs\.google\.com/,
+            urlPattern: /^\/api\/fetch-sheet/,
+            handler: 'NetworkOnly',
+          },
+          {
+            urlPattern: /^\/api\/sync-scores/,
             handler: 'NetworkOnly',
           },
           {
