@@ -1,9 +1,7 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
 const SCORES_SHEET_URL =
   'https://script.google.com/macros/s/AKfycbylJ2fe32lDVft5StZnHUJg6aFQBqwjYoq37FveObmXbqKHOxpVWYGNNVLp92RvtaDBrA/exec';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -30,4 +28,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (err) {
     return res.status(502).json({ status: 'error', message: String(err) });
   }
-}
+};
