@@ -2,9 +2,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
-    "api/*.ts": { "runtime": "@vercel/node@5" }
-  },
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/$1" }
-  ]
+    "api/fetch-sheet.ts": { "runtime": "@vercel/node@5" },
+    "api/sync-scores.ts": { "runtime": "@vercel/node@5" }
+  }
 }
