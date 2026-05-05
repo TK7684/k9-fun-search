@@ -10,7 +10,7 @@ export function exportCSV(scores: Score[]): void {
 
   const header =
     '﻿' +
-    'ลำดับ,สุนัข,สายพันธุ์,ผู้ควบคุม,VP1,VP2,VP3,การแต่งกาย,โบนัส,รวม,เวลา(นาที),หมายเหตุ\n';
+    'ลำดับ,สุนัข,สายพันธุ์,ผู้ควบคุม,VP1,VP2,VP3,โบนัสเวลา,โบนัสเชื่อฟัง,รวม,เวลา(นาที),หมายเหตุ\n';
 
   const rows = sortedScores
     .map((score, index) => {
@@ -18,7 +18,7 @@ export function exportCSV(scores: Score[]): void {
       return (
         `${index + 1},"${score.dogName}","${score.dogBreed || '-'}","${score.handlerName}",` +
         `${score.vpDetails['1']?.score.toFixed(1) ?? '0.0'},${score.vpDetails['2']?.score.toFixed(1) ?? '0.0'},` +
-        `${score.vpDetails['3']?.score.toFixed(1) ?? '0.0'},${score.attireScore},${score.bonusScore},` +
+        `${score.vpDetails['3']?.score.toFixed(1) ?? '0.0'},${score.timeBonus ?? 0},${score.bonusScore},` +
         `${score.totalScore.toFixed(1)},${minutes},"${score.notes || ''}"`
       );
     })

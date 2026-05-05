@@ -1,9 +1,8 @@
-import type { AttireState, BonusState, Settings } from '../../types';
+import type { AttireState, BonusState } from '../../types';
 
 interface ChecklistCardProps {
   attire: AttireState;
   bonus: BonusState;
-  settings: Settings;
   onAttireChange: (key: keyof AttireState, checked: boolean) => void;
   onBonusChange: (key: keyof BonusState, checked: boolean) => void;
 }
@@ -16,17 +15,9 @@ const ATTIRE_ITEMS: { key: keyof AttireState; label: string; icon: string; requi
   { key: 'gloves', label: 'ถุงมือ', icon: '🧤', required: false },
 ];
 
-const BONUS_ITEMS: { key: keyof BonusState; label: string; icon: string; settingsKey: keyof Settings }[] = [
-  { key: 'vp1', label: 'พบ VP1 ใน 1 นาที', icon: '⚡', settingsKey: 'bonusVp1' },
-  { key: 'vp2', label: 'พบ VP2 ใน 2 นาที', icon: '⚡', settingsKey: 'bonusVp2' },
-  { key: 'allFound', label: 'พบทั้ง 3 VP ใน 3 นาที', icon: '🏆', settingsKey: 'bonusAll' },
-  { key: 'down', label: 'เรียกกลับ + หมอบรอ', icon: '🐕', settingsKey: 'bonusDown' },
-];
-
 export default function ChecklistCard({
   attire,
   bonus,
-  settings,
   onAttireChange,
   onBonusChange,
 }: ChecklistCardProps) {
@@ -47,32 +38,24 @@ export default function ChecklistCard({
                 <span>
                   {icon} {label}
                 </span>
-                <span className={`points-badge${required ? '' : ' bonus'}`}>
-                  +{required ? settings.attireRequired : settings.attireBonus}
-                </span>
+                {required && <span className="points-badge required">จำเป็น</span>}
               </label>
             ))}
           </div>
         </div>
 
         <div className="checklist-section">
-          <h4>🎁 คะแนนพิเศษ + การเชื่อฟัง</h4>
+          <h4>🐕 การเชื่อฟัง</h4>
           <div className="checklist-items">
-            {BONUS_ITEMS.map(({ key, label, icon, settingsKey }) => (
-              <label className="checklist-item" key={key}>
-                <input
-                  type="checkbox"
-                  checked={bonus[key]}
-                  onChange={(e) => onBonusChange(key, e.target.checked)}
-                />
-                <span>
-                  {icon} {label}
-                </span>
-                <span className="points-badge bonus">
-                  +{settings[settingsKey]}
-                </span>
-              </label>
-            ))}
+            <label className="checklist-item">
+              <input
+                type="checkbox"
+                checked={bonus.down}
+                onChange={(e) => onBonusChange('down', e.target.checked)}
+              />
+              <span>🐕 เรียกกลับ + หมอบรอ</span>
+              <span className="points-badge bonus">+5</span>
+            </label>
           </div>
         </div>
       </div>

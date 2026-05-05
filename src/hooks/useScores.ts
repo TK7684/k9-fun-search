@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useRef } from 'react';
-import type { Score, VPState, AttireState, BonusState, Settings, MergedDog, VPDetail } from '../types';
-import { calculateLiveScore } from '../utils/scoring';
+import type { Score, VPState, BonusState, MergedDog, VPDetail } from '../types';
+import { calculateLiveScore, getGradeVpPoints } from '../utils/scoring';
 import { safeParse, saveToStorage } from '../utils/storage';
 import { appendScoreToSheet, syncScoresToSheet, clearSheetScores } from '../utils/sheetSync';
 
@@ -28,42 +28,18 @@ export function useScores() {
     (
       dog: MergedDog,
       vpState: VPState,
-      attire: AttireState,
       bonus: BonusState,
-      settings: Settings,
       timeInSeconds: number,
       notes: string,
     ): Score => {
-      const breakdown = calculateLiveScore(vpState, attire, bonus, settings);
-
-      const gradePercentages: Record<string, number> = {
-        'V': settings.gradeV / 100,
-        'V-': (settings.gradeV - 4) / 100,
-        'SG+': (settings.gradeSG + 3) / 100,
-        'SG': settings.gradeSG / 100,
-        'SG-': (settings.gradeSG - 2) / 100,
-        'G+': (settings.gradeG + 4) / 100,
-        'G': settings.gradeG / 100,
-        'G-': (settings.gradeG - 4) / 100,
-        'B+': (settings.gradeB + 5) / 100,
-        'B': settings.gradeB / 100,
-        'B-': (settings.gradeB - 4) / 100,
-        'M+': 0,
-        'M-': 0,
-      };
-
-      const vpPoints: Record<number, number> = {
-        1: settings.vp1Points,
-        2: settings.vp2Points,
-        3: settings.vp3Points,
-      };
-
       const vpDetails: Record<string, VPDetail> = {};
       for (let i = 1; i <= 3; i++) {
         const vp = vpState[i as 1 | 2 | 3];
-        const earnedScore = vp.found ? (vpPoints[i] ?? 0) * (gradePercentages[vp.grade] ?? 0) : 0;
+        const earnedScore = vp.found ? getGradeVpPoints(vp.grade, i as 1 | 2 | 3) : 0;
         vpDetails[i] = { found: vp.found, grade: vp.grade, score: earnedScore };
       }
+
+      const breakdown = calculateLiveScore(vpState, bonus, timeInSeconds);
 
       const scoreRecord: Score = {
         id: Date.now(),
@@ -73,7 +49,8 @@ export function useScores() {
         handlerName: dog.handlerName,
         vpDetails,
         vpScore: breakdown.vpScore,
-        attireScore: breakdown.attireScore,
+        attireScore: 0,
+        timeBonus: breakdown.timeBonus,
         bonusScore: breakdown.bonusScore,
         totalScore: breakdown.totalScore,
         timeInSeconds,
@@ -93,7 +70,7 @@ export function useScores() {
   );
 
   const editScore = useCallback(
-    (id: number, updates: Partial<Pick<Score, 'vpScore' | 'attireScore' | 'bonusScore' | 'timeInSeconds' | 'notes'>>) => {
+    (id: number, updates: Partial<Pick<Score, 'vpScore' | 'bonusScore' | 'timeInSeconds' | 'notes'>>) => {
       const idx = scores.findIndex((s) => s.id === id);
       if (idx === -1) return;
 
@@ -108,11 +85,12 @@ export function useScores() {
         vpDetails: existing.vpDetails,
         scoredAt: existing.scoredAt,
         vpScore: updates.vpScore ?? existing.vpScore,
-        attireScore: updates.attireScore ?? existing.attireScore,
+        attireScore: 0,
+        timeBonus: existing.timeBonus ?? 0,
         bonusScore: updates.bonusScore ?? existing.bonusScore,
         timeInSeconds: updates.timeInSeconds ?? existing.timeInSeconds,
         notes: updates.notes ?? existing.notes,
-        totalScore: (updates.vpScore ?? existing.vpScore) + (updates.attireScore ?? existing.attireScore) + (updates.bonusScore ?? existing.bonusScore),
+        totalScore: (updates.vpScore ?? existing.vpScore) + (updates.bonusScore ?? existing.bonusScore) + (existing.timeBonus ?? 0),
       };
 
       const next = [...scores];

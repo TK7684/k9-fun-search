@@ -26,14 +26,11 @@ const INITIAL_ATTIRE_STATE: AttireState = {
 };
 
 const INITIAL_BONUS_STATE: BonusState = {
-  vp1: false,
-  vp2: false,
-  allFound: false,
   down: false,
 };
 
 export default function JudgeTab() {
-  const { mergedDogs, settings, timer, saveScore, showToast, scoredDogIds } = useApp();
+  const { mergedDogs, timer, saveScore, showToast, scoredDogIds } = useApp();
 
   const [selectedDogId, setSelectedDogId] = useState<string>('');
   const [vpState, setVpState] = useState<VPState>({ ...INITIAL_VP_STATE });
@@ -44,8 +41,8 @@ export default function JudgeTab() {
   const panelOpen = selectedDogId !== '';
 
   const liveScore = useMemo(
-    () => calculateLiveScore(vpState, attireState, bonusState, settings),
-    [vpState, attireState, bonusState, settings],
+    () => calculateLiveScore(vpState, bonusState, timer.seconds),
+    [vpState, bonusState, timer.seconds],
   );
 
   // Unscored dogs for the selector
@@ -120,7 +117,7 @@ export default function JudgeTab() {
       return;
     }
 
-    saveScore(dog, vpState, attireState, bonusState, settings, timer.seconds, notes);
+    saveScore(dog, vpState, bonusState, timer.seconds, notes);
 
     showToast('บันทึกคะแนนสำเร็จ! 🎉', 'success');
     handleCancel();
@@ -130,6 +127,8 @@ export default function JudgeTab() {
     setSelectedDogId('');
     resetForm();
   }
+
+  const timeBonusLabel = timer.seconds <= 120 ? 'เร็ว +10' : timer.seconds <= 240 ? 'ช้า +2.5' : '-';
 
   return (
     <div className="scoring-section">
@@ -147,7 +146,7 @@ export default function JudgeTab() {
         <>
           <StickyScoreBar
             vpScore={liveScore.vpScore}
-            attireScore={liveScore.attireScore}
+            timeBonus={liveScore.timeBonus}
             bonusScore={liveScore.bonusScore}
             totalScore={liveScore.totalScore}
           />
@@ -162,7 +161,6 @@ export default function JudgeTab() {
 
           <VpScoringCard
             vpState={vpState}
-            settings={settings}
             onVpChange={handleVpChange}
             onGradeChange={handleGradeChange}
           />
@@ -170,16 +168,16 @@ export default function JudgeTab() {
           <ChecklistCard
             attire={attireState}
             bonus={bonusState}
-            settings={settings}
             onAttireChange={handleAttireChange}
             onBonusChange={handleBonusChange}
           />
 
           <LiveScoreCard
             vpScore={liveScore.vpScore}
-            attireScore={liveScore.attireScore}
+            timeBonus={liveScore.timeBonus}
             bonusScore={liveScore.bonusScore}
             totalScore={liveScore.totalScore}
+            timeBonusLabel={timeBonusLabel}
           />
 
           <NotesCard value={notes} onChange={setNotes} />

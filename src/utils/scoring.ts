@@ -1,62 +1,53 @@
-import type { VPState, AttireState, BonusState, Settings, ScoreBreakdown } from '../types';
+import type { VPState, BonusState, ScoreBreakdown } from '../types';
 
-/**
- * Pure function that computes score breakdown from state objects.
- * No DOM reads. This is the single source of truth for score computation.
- */
+// Fixed point lookup table from official scoring guide
+// [VP1 max 20, VP2 max 30, VP3 max 40]
+const GRADE_VP_POINTS: Record<string, [number, number, number]> = {
+  'V':   [20, 30, 40],
+  'V-':  [19.5, 29, 39],
+  'SG+': [19, 28.5, 38],
+  'SG':  [18.5, 28, 37],
+  'SG-': [18, 27, 36],
+  'G+':  [17.5, 26, 35],
+  'G':   [17, 25, 34],
+  'G-':  [16, 24, 32],
+  'B+':  [15.5, 23, 31],
+  'B':   [15, 22, 30],
+  'B-':  [14, 21, 28],
+  'M+':  [13.5, 20.5, 27],
+  'M-':  [0, 0, 0],
+};
+
+const DOWN_BONUS = 5;
+
+export function getGradeVpPoints(grade: string, vpNum: 1 | 2 | 3): number {
+  const points = GRADE_VP_POINTS[grade];
+  if (!points) return 0;
+  return points[vpNum - 1] ?? 0;
+}
+
+export function getTimeBonus(timeInSeconds: number): number {
+  if (timeInSeconds <= 120) return 10;   // 0-2 min
+  if (timeInSeconds <= 240) return 2.5;  // 3-4 min
+  return 0;
+}
+
 export function calculateLiveScore(
   vpState: VPState,
-  attire: AttireState,
   bonus: BonusState,
-  settings: Settings,
+  timeInSeconds: number,
 ): ScoreBreakdown {
-  const vpPoints: Record<number, number> = {
-    1: settings.vp1Points,
-    2: settings.vp2Points,
-    3: settings.vp3Points,
-  };
-
-  const gradePercentages: Record<string, number> = {
-    'V': settings.gradeV / 100,
-    'V-': (settings.gradeV - 4) / 100,
-    'SG+': (settings.gradeSG + 3) / 100,
-    'SG': settings.gradeSG / 100,
-    'SG-': (settings.gradeSG - 2) / 100,
-    'G+': (settings.gradeG + 4) / 100,
-    'G': settings.gradeG / 100,
-    'G-': (settings.gradeG - 4) / 100,
-    'B+': (settings.gradeB + 5) / 100,
-    'B': settings.gradeB / 100,
-    'B-': (settings.gradeB - 4) / 100,
-    'M+': 0,
-    'M-': 0,
-  };
-
   let vpScore = 0;
   for (let i = 1; i <= 3; i++) {
     const vp = vpState[i as 1 | 2 | 3];
     if (vp.found) {
-      const pct = gradePercentages[vp.grade] ?? 0;
-      vpScore += (vpPoints[i] ?? 0) * pct;
+      vpScore += getGradeVpPoints(vp.grade, i as 1 | 2 | 3);
     }
   }
 
-  // Attire: required items (shoes, shirt, pants) + bonus items (hat, gloves)
-  const requiredCount = [attire.shoes, attire.shirt, attire.pants].filter(Boolean).length;
-  const bonusItemCount = [attire.hat, attire.gloves].filter(Boolean).length;
+  const timeBonus = getTimeBonus(timeInSeconds);
+  const bonusScore = bonus.down ? DOWN_BONUS : 0;
+  const totalScore = vpScore + timeBonus + bonusScore;
 
-  let attireScore =
-    requiredCount * settings.attireRequired + bonusItemCount * settings.attireBonus;
-  if (attireScore > settings.attireMax) attireScore = settings.attireMax;
-
-  // Bonus
-  let bonusScore = 0;
-  if (bonus.vp1) bonusScore += settings.bonusVp1;
-  if (bonus.vp2) bonusScore += settings.bonusVp2;
-  if (bonus.allFound) bonusScore += settings.bonusAll;
-  if (bonus.down) bonusScore += settings.bonusDown;
-
-  const totalScore = vpScore + attireScore + bonusScore;
-
-  return { vpScore, attireScore, bonusScore, totalScore };
+  return { vpScore, timeBonus, bonusScore, totalScore };
 }

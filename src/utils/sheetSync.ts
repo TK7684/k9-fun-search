@@ -20,7 +20,7 @@ function scoreToRow(score: Score): (string | number)[] {
     score.vpDetails['3']?.score ?? 0,
     score.vpDetails['3']?.grade ?? '-',
     score.vpScore,
-    score.attireScore,
+    score.timeBonus ?? 0,
     score.bonusScore,
     score.totalScore,
     score.timeInSeconds,

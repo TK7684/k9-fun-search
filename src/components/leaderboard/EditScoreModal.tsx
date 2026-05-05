@@ -9,10 +9,9 @@ interface EditScoreModalProps {
 }
 
 export default function EditScoreModal({ editingScoreId, onClose }: EditScoreModalProps) {
-  const { scores, editScore, settings, showToast } = useApp();
+  const { scores, editScore, showToast } = useApp();
 
   const [vpScore, setVpScore] = useState(0);
-  const [attireScore, setAttireScore] = useState(0);
   const [bonusScore, setBonusScore] = useState(0);
   const [timeInSeconds, setTimeInSeconds] = useState(0);
   const [notes, setNotes] = useState('');
@@ -24,7 +23,6 @@ export default function EditScoreModal({ editingScoreId, onClose }: EditScoreMod
   useEffect(() => {
     if (score) {
       setVpScore(score.vpScore);
-      setAttireScore(score.attireScore);
       setBonusScore(score.bonusScore);
       setTimeInSeconds(score.timeInSeconds);
       setNotes(score.notes || '');
@@ -36,7 +34,6 @@ export default function EditScoreModal({ editingScoreId, onClose }: EditScoreMod
   const handleSave = () => {
     editScore(editingScoreId, {
       vpScore,
-      attireScore,
       bonusScore,
       timeInSeconds,
       notes,
@@ -81,18 +78,7 @@ export default function EditScoreModal({ editingScoreId, onClose }: EditScoreMod
           />
         </div>
         <div className="input-group">
-          <label>คะแนนการแต่งกาย</label>
-          <input
-            type="number"
-            value={attireScore}
-            step="0.1"
-            min="0"
-            max={settings.attireMax}
-            onChange={(e) => setAttireScore(parseFloat(e.target.value) || 0)}
-          />
-        </div>
-        <div className="input-group">
-          <label>คะแนนโบนัส</label>
+          <label>คะแนนเชื่อฟัง</label>
           <input
             type="number"
             value={bonusScore}

@@ -1,15 +1,17 @@
 interface LiveScoreCardProps {
   vpScore: number;
-  attireScore: number;
+  timeBonus: number;
   bonusScore: number;
   totalScore: number;
+  timeBonusLabel: string;
 }
 
 export default function LiveScoreCard({
   vpScore,
-  attireScore,
+  timeBonus,
   bonusScore,
   totalScore,
+  timeBonusLabel,
 }: LiveScoreCardProps) {
   return (
     <div className="live-score-card">
@@ -20,11 +22,11 @@ export default function LiveScoreCard({
           <span className="score-value">{vpScore.toFixed(1)}</span>
         </div>
         <div className="score-item">
-          <span className="score-label">👕 การแต่งกาย</span>
-          <span className="score-value">{attireScore}</span>
+          <span className="score-label">⏱️ เวลา ({timeBonusLabel})</span>
+          <span className="score-value">{timeBonus}</span>
         </div>
         <div className="score-item">
-          <span className="score-label">🎁 โบนัส</span>
+          <span className="score-label">🐕 เชื่อฟัง</span>
           <span className="score-value">{bonusScore}</span>
         </div>
         <div className="score-item">
