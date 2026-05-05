@@ -35,7 +35,6 @@ export function useSheetData() {
       }
 
       const rows = parseCSV(text);
-      if (rows.length < 2) throw new Error('ไม่พบข้อมูลใน Google Sheet');
 
       const dogs: SheetDog[] = [];
       for (let i = 1; i < rows.length; i++) {
@@ -45,8 +44,9 @@ export function useSheetData() {
         }
       }
 
-      const now = new Date().toISOString();
       setSheetDogs(dogs);
+      setFetchError(null);
+      const now = new Date().toISOString();
       setSheetLastFetch(now);
       saveToStorage(DOGS_KEY, dogs);
       localStorage.setItem(FETCH_KEY, now);
