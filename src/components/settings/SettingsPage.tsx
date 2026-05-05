@@ -60,14 +60,18 @@ export default function SettingsPage() {
 
         {/* Bonus Reference */}
         <div className="setting-card">
-          <h3>🎁 โบนัสเวลา + การเชื่อฟัง</h3>
+          <h3>⏱️ โบนัสเวลา + การเชื่อฟัง</h3>
           <div className="setting-item">
-            <label>พบเร็ว (นาที 0-2)</label>
+            <label>หา VP1 ภายใน 1 นาที</label>
             <span className="setting-value">+10 คะแนน</span>
           </div>
           <div className="setting-item">
-            <label>พบช้า (นาที 3-4)</label>
-            <span className="setting-value">+2.5 คะแนน</span>
+            <label>หา VP2 ภายใน 2 นาที</label>
+            <span className="setting-value">+10 คะแนน</span>
+          </div>
+          <div className="setting-item">
+            <label>หาครบ 3 VP ภายใน 3 นาที</label>
+            <span className="setting-value">+10 คะแนน</span>
           </div>
           <div className="setting-item">
             <label>เรียกกลับ + หมอบรอ</label>
@@ -77,9 +81,9 @@ export default function SettingsPage() {
 
         {/* Attire Reference */}
         <div className="setting-card">
-          <h3>👕 การแต่งกาย (จำเป็น)</h3>
+          <h3>👕 การแต่งกาย (10 คะแนน)</h3>
           <div className="setting-item">
-            <label>รองเท้า</label>
+            <label>รองเท้าเดินป่า/เซฟตี้</label>
             <span className="setting-value">จำเป็น</span>
           </div>
           <div className="setting-item">
@@ -89,6 +93,14 @@ export default function SettingsPage() {
           <div className="setting-item">
             <label>กางเกงขายาว</label>
             <span className="setting-value">จำเป็น</span>
+          </div>
+          <div className="setting-item">
+            <label>หมวก</label>
+            <span className="setting-value">+2 คะแนน</span>
+          </div>
+          <div className="setting-item">
+            <label>ถุงมือ</label>
+            <span className="setting-value">+2 คะแนน</span>
           </div>
         </div>
       </div>

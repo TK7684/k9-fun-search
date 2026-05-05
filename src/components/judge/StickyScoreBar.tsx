@@ -1,5 +1,6 @@
 interface StickyScoreBarProps {
   vpScore: number;
+  attireScore: number;
   timeBonus: number;
   bonusScore: number;
   totalScore: number;
@@ -7,6 +8,7 @@ interface StickyScoreBarProps {
 
 export default function StickyScoreBar({
   vpScore,
+  attireScore,
   timeBonus,
   bonusScore,
   totalScore,
@@ -21,6 +23,10 @@ export default function StickyScoreBar({
         <div className="breakdown-item">
           <span className="breakdown-icon">🎯</span>
           VP {vpScore.toFixed(1)}
+        </div>
+        <div className="breakdown-item">
+          <span className="breakdown-icon">👕</span>
+          {attireScore}
         </div>
         <div className="breakdown-item">
           <span className="breakdown-icon">⏱️</span>

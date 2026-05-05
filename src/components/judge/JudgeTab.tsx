@@ -26,6 +26,9 @@ const INITIAL_ATTIRE_STATE: AttireState = {
 };
 
 const INITIAL_BONUS_STATE: BonusState = {
+  vp1: false,
+  vp2: false,
+  allFound: false,
   down: false,
 };
 
@@ -41,8 +44,8 @@ export default function JudgeTab() {
   const panelOpen = selectedDogId !== '';
 
   const liveScore = useMemo(
-    () => calculateLiveScore(vpState, bonusState, timer.seconds),
-    [vpState, bonusState, timer.seconds],
+    () => calculateLiveScore(vpState, attireState, bonusState),
+    [vpState, attireState, bonusState],
   );
 
   // Unscored dogs for the selector
@@ -117,7 +120,7 @@ export default function JudgeTab() {
       return;
     }
 
-    saveScore(dog, vpState, bonusState, timer.seconds, notes);
+    saveScore(dog, vpState, attireState, bonusState, timer.seconds, notes);
 
     showToast('บันทึกคะแนนสำเร็จ! 🎉', 'success');
     handleCancel();
@@ -127,8 +130,6 @@ export default function JudgeTab() {
     setSelectedDogId('');
     resetForm();
   }
-
-  const timeBonusLabel = timer.seconds <= 120 ? 'เร็ว +10' : timer.seconds <= 240 ? 'ช้า +2.5' : '-';
 
   return (
     <div className="scoring-section">
@@ -146,6 +147,7 @@ export default function JudgeTab() {
         <>
           <StickyScoreBar
             vpScore={liveScore.vpScore}
+            attireScore={liveScore.attireScore}
             timeBonus={liveScore.timeBonus}
             bonusScore={liveScore.bonusScore}
             totalScore={liveScore.totalScore}
@@ -174,10 +176,10 @@ export default function JudgeTab() {
 
           <LiveScoreCard
             vpScore={liveScore.vpScore}
+            attireScore={liveScore.attireScore}
             timeBonus={liveScore.timeBonus}
             bonusScore={liveScore.bonusScore}
             totalScore={liveScore.totalScore}
-            timeBonusLabel={timeBonusLabel}
           />
 
           <NotesCard value={notes} onChange={setNotes} />

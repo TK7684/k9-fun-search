@@ -34,7 +34,7 @@ export default function LeaderboardItem({ score, rank, onEdit, onDelete }: Leade
         </div>
         <div className="lb-score-col">
           <div className="lb-total">{score.totalScore.toFixed(1)}</div>
-          <div className="lb-sub">VP {score.vpScore.toFixed(0)} + ⏱️ {score.timeBonus ?? 0} + 🐕 {score.bonusScore}</div>
+          <div className="lb-sub">VP {score.vpScore.toFixed(0)} + 👕 {score.attireScore ?? 0} + ⏱️ {score.timeBonus ?? 0} + 🐕 {score.bonusScore}</div>
         </div>
       </div>
       {expanded && (

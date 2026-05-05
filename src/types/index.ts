@@ -71,11 +71,15 @@ export interface AttireState {
 }
 
 export interface BonusState {
+  vp1: boolean;
+  vp2: boolean;
+  allFound: boolean;
   down: boolean;
 }
 
 export interface ScoreBreakdown {
   vpScore: number;
+  attireScore: number;
   timeBonus: number;
   bonusScore: number;
   totalScore: number;

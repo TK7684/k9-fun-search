@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useRef } from 'react';
-import type { Score, VPState, BonusState, MergedDog, VPDetail } from '../types';
+import type { Score, VPState, AttireState, BonusState, MergedDog, VPDetail } from '../types';
 import { calculateLiveScore, getGradeVpPoints } from '../utils/scoring';
 import { safeParse, saveToStorage } from '../utils/storage';
 import { appendScoreToSheet, syncScoresToSheet, clearSheetScores } from '../utils/sheetSync';
@@ -28,6 +28,7 @@ export function useScores() {
     (
       dog: MergedDog,
       vpState: VPState,
+      attire: AttireState,
       bonus: BonusState,
       timeInSeconds: number,
       notes: string,
@@ -39,7 +40,7 @@ export function useScores() {
         vpDetails[i] = { found: vp.found, grade: vp.grade, score: earnedScore };
       }
 
-      const breakdown = calculateLiveScore(vpState, bonus, timeInSeconds);
+      const breakdown = calculateLiveScore(vpState, attire, bonus);
 
       const scoreRecord: Score = {
         id: Date.now(),
@@ -49,7 +50,7 @@ export function useScores() {
         handlerName: dog.handlerName,
         vpDetails,
         vpScore: breakdown.vpScore,
-        attireScore: 0,
+        attireScore: breakdown.attireScore,
         timeBonus: breakdown.timeBonus,
         bonusScore: breakdown.bonusScore,
         totalScore: breakdown.totalScore,
@@ -85,12 +86,12 @@ export function useScores() {
         vpDetails: existing.vpDetails,
         scoredAt: existing.scoredAt,
         vpScore: updates.vpScore ?? existing.vpScore,
-        attireScore: 0,
+        attireScore: existing.attireScore ?? 0,
         timeBonus: existing.timeBonus ?? 0,
         bonusScore: updates.bonusScore ?? existing.bonusScore,
         timeInSeconds: updates.timeInSeconds ?? existing.timeInSeconds,
         notes: updates.notes ?? existing.notes,
-        totalScore: (updates.vpScore ?? existing.vpScore) + (updates.bonusScore ?? existing.bonusScore) + (existing.timeBonus ?? 0),
+        totalScore: (updates.vpScore ?? existing.vpScore) + (existing.attireScore ?? 0) + (existing.timeBonus ?? 0) + (updates.bonusScore ?? existing.bonusScore),
       };
 
       const next = [...scores];
