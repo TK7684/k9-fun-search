@@ -50,8 +50,8 @@ body,
 .main-content,
 .modal-content,
 .form-card,
-.teams-list-card,
-.team-card,
+.dogs-list-card,
+.dog-card,
 .timer-card,
 .vp-scoring-card,
 .quick-checklist-card,
@@ -65,7 +65,7 @@ body,
 .vp-item,
 .input-group input,
 .input-group select,
-.team-select {
+.dog-select {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 

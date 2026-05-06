@@ -28,4 +28,12 @@
     --radius-md: 12px;
     --radius-lg: 15px;
     --radius-xl: 20px;
+
+    /* Rank badge gradients */
+    --rank-gold-from: #fbbf24;
+    --rank-gold-to: #f59e0b;
+    --rank-silver-from: #9ca3af;
+    --rank-silver-to: #6b7280;
+    --rank-bronze-from: #f87171;
+    --rank-bronze-to: #dc2626;
 }

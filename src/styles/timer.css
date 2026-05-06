@@ -41,8 +41,8 @@
     transition: all 0.3s ease;
     background: rgba(255, 255, 255, 0.25);
     color: var(--text-inverse);
-    min-width: 120px;
-    min-height: 64px;
+    min-width: 140px;
+    min-height: 72px;
 }
 
 .timer-btn.start {
