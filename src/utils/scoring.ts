@@ -26,6 +26,7 @@ const BONUS_ALL_FOUND = 10;
 const BONUS_DOWN = 5;
 
 export function getGradeVpPoints(grade: VPGrade | '', vpNum: 1 | 2 | 3): number {
+  if (!grade) return 0;
   const points = GRADE_VP_POINTS[grade];
   if (!points) return 0;
   return points[vpNum - 1] ?? 0;

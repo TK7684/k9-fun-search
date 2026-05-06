@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { Dog, SheetDog, MergedDog, DogId } from '../types';
+import type { Dog, SheetDog, MergedDog } from '../types';
 
 export function useMergedDogs(dogs: Dog[], sheetDogs: SheetDog[]): MergedDog[] {
   return useMemo(() => {

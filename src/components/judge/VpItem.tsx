@@ -60,7 +60,7 @@ export default function VpItem({
         <select
           className="grade-select"
           value={grade}
-          onChange={(e) => onGradeChange(e.target.value)}
+          onChange={(e) => onGradeChange(e.target.value as VPGrade | '')}
         >
           {GRADE_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
