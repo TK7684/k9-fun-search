@@ -23,7 +23,7 @@
     font-family: inherit;
     transition: all 0.3s ease;
     box-shadow: 0 6px 20px var(--shadow);
-    min-height: 70px;
+    min-height: 72px;
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -76,6 +76,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     -webkit-tap-highlight-color: transparent;
+    min-height: 64px;
 }
 
 .mobile-nav-item .nav-icon {

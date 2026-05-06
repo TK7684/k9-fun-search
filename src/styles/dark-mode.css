@@ -24,6 +24,14 @@ body.dark {
     --dark: #f1f5f9;
     --gradient-primary: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
     --gradient-success: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+
+    /* Rank badge gradients — brighter for dark backgrounds */
+    --rank-gold-from: #fcd34d;
+    --rank-gold-to: #f59e0b;
+    --rank-silver-from: #d1d5db;
+    --rank-silver-to: #9ca3af;
+    --rank-bronze-from: #fca5a5;
+    --rank-bronze-to: #ef4444;
 }
 
 /* Dark mode variants */

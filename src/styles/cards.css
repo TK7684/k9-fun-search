@@ -1,13 +1,13 @@
 /* ========== Cards ========== */
 .form-card,
-.teams-list-card {
+.dogs-list-card {
     background: var(--bg-card-alt);
     border-radius: var(--radius-lg);
     padding: 25px;
 }
 
 .form-card h3,
-.teams-list-card h3 {
+.dogs-list-card h3 {
     font-size: 18px;
     margin-bottom: 20px;
     color: var(--text-primary);
@@ -21,7 +21,7 @@
     gap: 12px;
 }
 
-.team-card {
+.dog-card {
     background: var(--bg-card);
     padding: 15px;
     border-radius: var(--radius-md);
@@ -29,25 +29,25 @@
     transition: all 0.3s ease;
 }
 
-.team-card:hover {
+.dog-card:hover {
     transform: translateX(5px);
     box-shadow: 0 4px 15px var(--shadow);
 }
 
-.team-card-header {
+.dog-card-header {
     display: flex;
     justify-content: space-between;
     align-items: start;
     margin-bottom: 10px;
 }
 
-.team-name {
+.dog-name {
     font-weight: 600;
     font-size: 16px;
     color: var(--primary);
 }
 
-.team-delete {
+.dog-delete {
     background: none;
     border: none;
     color: var(--danger);
@@ -57,20 +57,20 @@
     transition: transform 0.2s ease;
 }
 
-.team-delete:hover {
+.dog-delete:hover {
     transform: scale(1.2);
 }
 
-.team-info {
+.dog-info {
     font-size: 14px;
     color: var(--text-secondary);
     line-height: 1.6;
 }
 
-.team-info span { display: block; }
+.dog-info span { display: block; }
 
 /* Judge Section */
-.team-selector-card {
+.dog-selector-card {
     margin-bottom: 25px;
 }
 
@@ -81,7 +81,7 @@
     color: var(--text-primary);
 }
 
-.team-select {
+.dog-select {
     width: 100%;
     padding: 16px;
     border: 3px solid var(--border-color);
@@ -208,7 +208,7 @@
     display: block;
 }
 
-.team-card.sheet-origin {
+.dog-card.sheet-origin {
     border-left: 4px solid var(--success);
     opacity: 1.0;
 }
