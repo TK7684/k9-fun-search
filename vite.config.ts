@@ -25,10 +25,30 @@ export default defineConfig({
         ],
       },
       workbox: {
+        navigateFallback: '/offline.html',
+        navigateFallbackDenylist: [/^\/api/],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        additionalManifestEntries: [
+          { url: '/offline.html', revision: Date.now().toString() },
+        ],
         runtimeCaching: [
           {
+            urlPattern: /^\/$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'html-shell',
+              expiration: { maxEntries: 1, maxAgeSeconds: 60 * 60 * 24 },
+            },
+          },
+          {
             urlPattern: /^\/api\/fetch-sheet/,
-            handler: 'NetworkOnly',
+            handler: 'NetworkFirst',
+            options: {
+              networkTimeoutSeconds: 5,
+              cacheName: 'api-fetch-sheet',
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
           },
           {
             urlPattern: /^\/api\/sync-scores/,
