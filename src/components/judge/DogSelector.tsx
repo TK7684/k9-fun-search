@@ -8,13 +8,13 @@ interface DogSelectorProps {
 
 export default function DogSelector({ dogs, selectedDogId, onSelect }: DogSelectorProps) {
   return (
-    <div className="team-selector-card">
-      <label className="selector-label" htmlFor="team-select">
+    <div className="dog-selector-card">
+      <label className="selector-label" htmlFor="dog-select">
         เลือกสุนัขที่จะให้คะแนน
       </label>
       <select
-        id="team-select"
-        className="team-select"
+        id="dog-select"
+        className="dog-select"
         value={selectedDogId}
         onChange={(e) => onSelect(e.target.value)}
       >

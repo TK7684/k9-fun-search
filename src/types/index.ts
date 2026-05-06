@@ -1,3 +1,5 @@
+export type DogId = number | string;
+
 export interface Dog {
   id: number;
   dogName: string;
@@ -19,15 +21,18 @@ export interface SheetDog extends Omit<Dog, 'id'> {
   };
 }
 
+export const VP_GRADES = ['V', 'V-', 'SG+', 'SG', 'SG-', 'G+', 'G', 'G-', 'B+', 'B', 'B-', 'M+', 'M-'] as const;
+export type VPGrade = typeof VP_GRADES[number];
+
 export interface VPDetail {
   found: boolean;
-  grade: string;
+  grade: VPGrade | '';
   score: number;
 }
 
 export interface Score {
   id: number;
-  dogId: number | string;
+  dogId: DogId;
   dogName: string;
   dogBreed: string;
   handlerName: string;
@@ -60,7 +65,7 @@ export interface Settings {
   bonusDown: number;
 }
 
-export type VPState = Record<1 | 2 | 3, { found: boolean; grade: string }>;
+export type VPState = Record<1 | 2 | 3, { found: boolean; grade: VPGrade | '' }>;
 
 export interface AttireState {
   shoes: boolean;
@@ -85,4 +90,12 @@ export interface ScoreBreakdown {
   totalScore: number;
 }
 
-export type MergedDog = Dog | SheetDog;
+export interface MergedDogBase {
+  id: DogId;
+  dogName: string;
+  dogBreed: string;
+  handlerName: string;
+  registeredAt: string;
+}
+
+export type MergedDog = (Dog | SheetDog) & MergedDogBase;

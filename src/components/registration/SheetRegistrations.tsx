@@ -19,6 +19,21 @@ function getSexIcon(sex: string): string {
   return '♂️';
 }
 
+function SkeletonCard() {
+  return (
+    <div className="sheet-dog-card skeleton" aria-hidden="true">
+      <div className="sheet-dog-header">
+        <span className="sheet-dog-name skeleton-bar" style={{ width: '60%' }} />
+        <span className="sheet-badge skeleton-badge">...</span>
+      </div>
+      <div className="sheet-dog-info">
+        <span className="skeleton-bar" style={{ width: '75%' }} />
+        <span className="skeleton-bar" style={{ width: '50%' }} />
+      </div>
+    </div>
+  );
+}
+
 export default function SheetRegistrations({
   sheetDogs,
   fetchSheetData,
@@ -38,6 +53,8 @@ export default function SheetRegistrations({
     statusText = 'โหลดสำเร็จ — ' + sheetDogs.length + ' สุนัข';
   }
 
+  const showSkeleton = isFetching && sheetDogs.length === 0;
+
   return (
     <div className="sheet-registrations-card">
       <div className="sheet-header">
@@ -45,11 +62,11 @@ export default function SheetRegistrations({
         <div className="sheet-controls">
           <span className="sheet-last-fetch">{formatLastFetch(sheetLastFetch)}</span>
           <button
-            className="icon-btn"
+            className={fetchError ? 'btn btn-primary' : 'icon-btn'}
             onClick={fetchSheetData}
             disabled={isFetching}
           >
-            🔄 รีเฟรช
+            🔄 {fetchError ? 'ลองอีกครั้ง' : 'รีเฟรช'}
           </button>
         </div>
       </div>
@@ -57,7 +74,13 @@ export default function SheetRegistrations({
       <div className={statusClass}>{statusText}</div>
 
       <div className="sheet-dogs-container">
-        {sheetDogs.length === 0 ? (
+        {showSkeleton ? (
+          <>
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </>
+        ) : sheetDogs.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon">📋</div>
             <div className="empty-state-text">ยังไม่มีข้อมูลจาก Google Form</div>

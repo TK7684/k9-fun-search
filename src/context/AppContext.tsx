@@ -65,6 +65,11 @@ export interface AppContextType {
   setActiveTab: (tab: ActiveTab) => void;
   editingScoreId: number | null;
   setEditingScoreId: (id: number | null) => void;
+
+  // Sync status — wired after sync-engine merge
+  hasPendingSyncs: boolean;
+  syncQueueLength: number;
+  offlineMode: boolean;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -135,6 +140,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setActiveTab,
     editingScoreId,
     setEditingScoreId,
+
+    // Sync status — wired after sync-engine merge
+    hasPendingSyncs: false,
+    syncQueueLength: 0,
+    offlineMode: false,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
