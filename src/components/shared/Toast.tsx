@@ -1,7 +1,23 @@
+import { useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 
 export default function Toast() {
-  const { toast, performUndo } = useApp();
+  const { toast, performUndo, showToast } = useApp();
+
+  useEffect(() => {
+    function handleOffline() {
+      showToast('ออฟไลน์ — ข้อมูลบันทึกไว้ในเครื่อง', 'info');
+    }
+    function handleOnline() {
+      showToast('ออนไลน์ — กำลังซิงค์ข้อมูล', 'success');
+    }
+    window.addEventListener('offline', handleOffline);
+    window.addEventListener('online', handleOnline);
+    return () => {
+      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('online', handleOnline);
+    };
+  }, [showToast]);
 
   if (!toast) return null;
 
