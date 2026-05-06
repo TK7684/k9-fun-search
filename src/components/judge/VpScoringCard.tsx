@@ -1,10 +1,10 @@
-import type { VPState } from '../../types';
+import type { VPState, VPGrade } from '../../types';
 import VpItem from './VpItem';
 
 interface VpScoringCardProps {
   vpState: VPState;
   onVpChange: (vpNum: 1 | 2 | 3, found: boolean) => void;
-  onGradeChange: (vpNum: 1 | 2 | 3, grade: string) => void;
+  onGradeChange: (vpNum: 1 | 2 | 3, grade: VPGrade | '') => void;
 }
 
 const VP_CONFIG: { num: 1 | 2 | 3; label: string; difficulty: 'easy' | 'medium' | 'hard' }[] = [

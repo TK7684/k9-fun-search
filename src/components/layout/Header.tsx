@@ -1,25 +1,15 @@
 import { useApp } from '../../context/AppContext';
-import { demoDogs, demoScores } from '../../utils/demoData';
 
 export default function Header() {
   const {
     mergedDogs,
     scores,
     darkMode,
-    setDogsWithUndo,
-    setScoresWithUndo,
-    showToast,
   } = useApp();
 
   const totalDogs = mergedDogs.length;
   const completedScores = scores.length;
   const progressPercent = totalDogs > 0 ? Math.min((completedScores / totalDogs) * 100, 100) : 0;
-
-  function handleLoadDemo() {
-    setDogsWithUndo(demoDogs);
-    setScoresWithUndo(demoScores);
-    showToast(`โหลดข้อมูลสาธิตสำเร็จ! ${demoDogs.length} สุนัข, ${demoScores.length} คะแนน`, 'success');
-  }
 
   return (
     <header className="main-header">
@@ -57,13 +47,6 @@ export default function Header() {
               aria-label={darkMode.isDark ? 'โหมดสว่าง' : 'โหมดมืด'}
             >
               {darkMode.isDark ? '☀️' : '🌙'}
-            </button>
-            <button
-              className="icon-btn-round"
-              onClick={handleLoadDemo}
-              aria-label="ข้อมูลตัวอย่าง"
-            >
-              🎮
             </button>
           </div>
         </div>

@@ -1,13 +1,14 @@
 import { getGradeVpPoints } from '../../utils/scoring';
+import type { VPGrade } from '../../types';
 
 interface VpItemProps {
   vpNum: 1 | 2 | 3;
   label: string;
   difficulty: 'easy' | 'medium' | 'hard';
   found: boolean;
-  grade: string;
+  grade: VPGrade | '';
   onFoundChange: (found: boolean) => void;
-  onGradeChange: (grade: string) => void;
+  onGradeChange: (grade: VPGrade | '') => void;
 }
 
 const GRADE_OPTIONS = [

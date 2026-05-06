@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Modal from '../shared/Modal';
 import { useApp } from '../../context/AppContext';
 import type { Score } from '../../types';
@@ -6,6 +6,10 @@ import type { Score } from '../../types';
 interface EditScoreModalProps {
   editingScoreId: number | null;
   onClose: () => void;
+}
+
+function clamp(v: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, v));
 }
 
 export default function EditScoreModal({ editingScoreId, onClose }: EditScoreModalProps) {
@@ -29,18 +33,31 @@ export default function EditScoreModal({ editingScoreId, onClose }: EditScoreMod
     }
   }, [score?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const hasErrors = useMemo(() => {
+    const vpOutOfRange = vpScore < 0 || vpScore > 100;
+    const bonusOutOfRange = bonusScore < 0 || bonusScore > 100;
+    const timeOutOfRange = timeInSeconds < 0 || timeInSeconds > 600;
+    return vpOutOfRange || bonusOutOfRange || timeOutOfRange;
+  }, [vpScore, bonusScore, timeInSeconds]);
+
   if (!editingScoreId || !score) return null;
 
   const handleSave = () => {
+    if (hasErrors) return;
+
     editScore(editingScoreId, {
-      vpScore,
-      bonusScore,
-      timeInSeconds,
+      vpScore: clamp(vpScore, 0, 100),
+      bonusScore: clamp(bonusScore, 0, 100),
+      timeInSeconds: clamp(timeInSeconds, 0, 600),
       notes,
     });
     showToast('แก้ไขคะแนนสำเร็จ!', 'success');
     onClose();
   };
+
+  const vpOutOfRange = vpScore < 0 || vpScore > 100;
+  const bonusOutOfRange = bonusScore < 0 || bonusScore > 100;
+  const timeOutOfRange = timeInSeconds < 0 || timeInSeconds > 600;
 
   return (
     <Modal
@@ -49,7 +66,7 @@ export default function EditScoreModal({ editingScoreId, onClose }: EditScoreMod
       title="✏️ แก้ไขคะแนน"
       footer={
         <>
-          <button className="btn btn-primary" onClick={handleSave}>
+          <button className="btn btn-primary" onClick={handleSave} disabled={hasErrors}>
             💾 บันทึก
           </button>
           <button className="btn btn-secondary" onClick={onClose}>
@@ -74,8 +91,13 @@ export default function EditScoreModal({ editingScoreId, onClose }: EditScoreMod
             value={vpScore}
             step="0.1"
             min="0"
+            max="100"
             onChange={(e) => setVpScore(parseFloat(e.target.value) || 0)}
           />
+          {vpOutOfRange && (
+            <span className="field-error">คะแนน VP ต้องอยู่ระหว่าง 0-100</span>
+          )}
+          <span className="field-hint">0 - 100</span>
         </div>
         <div className="input-group">
           <label>คะแนนเชื่อฟัง</label>
@@ -84,8 +106,13 @@ export default function EditScoreModal({ editingScoreId, onClose }: EditScoreMod
             value={bonusScore}
             step="0.1"
             min="0"
+            max="100"
             onChange={(e) => setBonusScore(parseFloat(e.target.value) || 0)}
           />
+          {bonusOutOfRange && (
+            <span className="field-error">คะแนนเชื่อฟัง ต้องอยู่ระหว่าง 0-100</span>
+          )}
+          <span className="field-hint">0 - 100</span>
         </div>
         <div className="input-group">
           <label>เวลา (วินาที)</label>
@@ -93,8 +120,13 @@ export default function EditScoreModal({ editingScoreId, onClose }: EditScoreMod
             type="number"
             value={timeInSeconds}
             min="0"
+            max="600"
             onChange={(e) => setTimeInSeconds(parseInt(e.target.value) || 0)}
           />
+          {timeOutOfRange && (
+            <span className="field-error">เวลาต้องอยู่ระหว่าง 0-600 วินาที</span>
+          )}
+          <span className="field-hint">0 - 600 วินาที (10 นาที)</span>
         </div>
         <div className="input-group">
           <label>หมายเหตุ</label>

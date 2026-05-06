@@ -9,9 +9,9 @@ export default function DogList() {
   const { mergedDogs, deleteDogWithUndo } = useApp();
 
   return (
-    <div className="teams-list-card">
+    <div className="dogs-list-card">
       <h3>รายชื่อสุนัขทั้งหมด ({mergedDogs.length})</h3>
-      <div className="teams-container">
+      <div className="dogs-container">
         {mergedDogs.length === 0 ? (
           <div className="empty-state">
             <div className="empty-state-icon">🐕</div>
@@ -22,17 +22,17 @@ export default function DogList() {
             const sheet = isSheetDog(dog);
             return (
               <div
-                className={`team-card${sheet ? ' sheet-origin' : ''}`}
+                className={`dog-card${sheet ? ' sheet-origin' : ''}`}
                 key={String(dog.id)}
               >
-                <div className="team-card-header">
-                  <div className="team-name">
+                <div className="dog-card-header">
+                  <div className="dog-name">
                     {dog.dogName}{' '}
                     {sheet && <span className="sheet-badge-inline">Form</span>}
                   </div>
                   {!sheet && (
                     <button
-                      className="team-delete"
+                      className="dog-delete"
                       onClick={() => deleteDogWithUndo(dog.id)}
                       title="ลบสุนัข"
                     >
@@ -40,7 +40,7 @@ export default function DogList() {
                     </button>
                   )}
                 </div>
-                <div className="team-info">
+                <div className="dog-info">
                   <span>🐕 {dog.dogName} ({dog.dogBreed})</span>
                   <span>👤 {dog.handlerName}</span>
                 </div>

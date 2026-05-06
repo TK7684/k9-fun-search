@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useApp } from '../../context/AppContext';
 import { calculateLiveScore } from '../../utils/scoring';
-import type { VPState, AttireState, BonusState } from '../../types';
+import type { VPState, AttireState, BonusState, VPGrade } from '../../types';
 import DogSelector from './DogSelector';
 import StickyScoreBar from './StickyScoreBar';
 import Timer from './Timer';
@@ -88,7 +88,7 @@ export default function JudgeTab() {
     }));
   }
 
-  function handleGradeChange(vpNum: 1 | 2 | 3, grade: string) {
+  function handleGradeChange(vpNum: 1 | 2 | 3, grade: VPGrade | '') {
     setVpState((prev) => ({
       ...prev,
       [vpNum]: { ...prev[vpNum], grade },

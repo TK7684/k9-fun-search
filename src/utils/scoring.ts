@@ -1,8 +1,8 @@
-import type { VPState, AttireState, BonusState, ScoreBreakdown } from '../types';
+import type { VPState, AttireState, BonusState, ScoreBreakdown, VPGrade } from '../types';
 
 // Fixed point lookup table from official scoring guide
 // [VP1 max 20, VP2 max 30, VP3 max 40]
-const GRADE_VP_POINTS: Record<string, [number, number, number]> = {
+const GRADE_VP_POINTS: Record<VPGrade, [number, number, number]> = {
   'V':   [20, 30, 40],
   'V-':  [19.5, 29, 39],
   'SG+': [19, 28.5, 38],
@@ -25,7 +25,7 @@ const BONUS_VP2 = 10;
 const BONUS_ALL_FOUND = 10;
 const BONUS_DOWN = 5;
 
-export function getGradeVpPoints(grade: string, vpNum: 1 | 2 | 3): number {
+export function getGradeVpPoints(grade: VPGrade | '', vpNum: 1 | 2 | 3): number {
   const points = GRADE_VP_POINTS[grade];
   if (!points) return 0;
   return points[vpNum - 1] ?? 0;
