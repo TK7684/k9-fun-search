@@ -3,6 +3,7 @@ import type { SheetDog } from '../types';
 import { SHEET_CSV_URL, SHEET_REFRESH_INTERVAL } from '../utils/constants';
 import { parseCSV, mapSheetRowToDog } from '../utils/csvParser';
 import { safeParse, saveToStorage } from '../utils/storage';
+import { processSyncQueue } from '../utils/sheetSync';
 
 const DOGS_KEY = 'k9_sheet_dogs';
 const FETCH_KEY = 'k9_sheet_last_fetch';
@@ -12,10 +13,17 @@ export function useSheetData() {
   const [sheetLastFetch, setSheetLastFetch] = useState<string | null>(() => localStorage.getItem(FETCH_KEY) || null);
   const [isFetching, setIsFetching] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [offlineMode, setOfflineMode] = useState(() => !navigator.onLine);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   const fetchSheetData = useCallback(async () => {
+    // Skip fetch if offline
+    if (!navigator.onLine) {
+      setOfflineMode(true);
+      return;
+    }
+
     // Abort any in-flight fetch
     if (abortRef.current) abortRef.current.abort();
     const controller = new AbortController();
@@ -67,11 +75,26 @@ export function useSheetData() {
 
     intervalRef.current = setInterval(fetchSheetData, SHEET_REFRESH_INTERVAL);
 
+    // Online/offline listeners
+    const handleOnline = () => {
+      setOfflineMode(false);
+      fetchSheetData();
+      processSyncQueue().catch(() => {});
+    };
+    const handleOffline = () => {
+      setOfflineMode(true);
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
       if (abortRef.current) abortRef.current.abort();
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
     };
   }, [fetchSheetData]);
 
-  return { sheetDogs, sheetLastFetch, fetchSheetData, isFetching, fetchError };
+  return { sheetDogs, sheetLastFetch, fetchSheetData, isFetching, fetchError, offlineMode };
 }

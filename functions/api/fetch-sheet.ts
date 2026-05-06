@@ -1,9 +1,10 @@
-const SHEET_CSV_URL =
+const DEFAULT_SHEET_CSV_URL =
   'https://docs.google.com/spreadsheets/d/1sqGIsvbYL29iDXVO5dSa9KIglDqlqGJZqKIHMsXG5WI/export?format=csv&gid=1859063378';
 
-export const onRequestGet: PagesFunction = async () => {
+export const onRequestGet: PagesFunction = async (ctx) => {
+  const csvUrl = (ctx.env as Record<string, string>)?.SHEET_CSV_URL || DEFAULT_SHEET_CSV_URL;
   try {
-    const res = await fetch(SHEET_CSV_URL, { redirect: 'follow' });
+    const res = await fetch(csvUrl, { redirect: 'follow' });
     if (!res.ok) return new Response(`Upstream ${res.status}`, { status: res.status });
     const text = await res.text();
     return new Response(text, {
