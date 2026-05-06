@@ -1,7 +1,7 @@
 import type { Settings } from '../types';
 
-export const SHEET_CSV_URL = '/api/fetch-sheet';
-export const SCORES_SHEET_URL = '/api/sync-scores';
+export const SHEET_CSV_URL = import.meta.env.VITE_SHEET_CSV_URL || '/api/fetch-sheet';
+export const SCORES_SHEET_URL = import.meta.env.VITE_APPS_SCRIPT_URL || '/api/sync-scores';
 export const SHEET_REFRESH_INTERVAL = 5 * 60 * 1000;
 
 export const LOGO_URL =

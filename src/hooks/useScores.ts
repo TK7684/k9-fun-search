@@ -1,14 +1,15 @@
 import { useState, useCallback, useMemo, useRef } from 'react';
 import type { Score, VPState, AttireState, BonusState, MergedDog, VPDetail } from '../types';
 import { calculateLiveScore, getGradeVpPoints } from '../utils/scoring';
-import { safeParse, saveToStorage } from '../utils/storage';
-import { appendScoreToSheet, syncScoresToSheet, clearSheetScores } from '../utils/sheetSync';
+import { safeParse, saveToStorage, getSyncQueue } from '../utils/storage';
+import { appendScoreToSheet, syncScoresToSheet, clearSheetScores, processSyncQueue } from '../utils/sheetSync';
 
 const STORAGE_KEY = 'k9_scores';
 
 export function useScores() {
   const [scores, setScores] = useState<Score[]>(() => safeParse<Score[]>(STORAGE_KEY) ?? []);
   const syncErrorRef = useRef<((msg: string) => void) | null>(null);
+  const [pendingSyncs, setPendingSyncs] = useState(() => getSyncQueue().length);
 
   const persist = (next: Score[]) => {
     setScores(next);
@@ -22,6 +23,7 @@ export function useScores() {
   const handleSyncError = (err: unknown) => {
     console.error('Sheet sync failed:', err);
     syncErrorRef.current?.('ซิงค์ไป Google Sheet ไม่สำเร็จ');
+    setPendingSyncs(getSyncQueue().length);
   };
 
   const saveScore = useCallback(
@@ -62,7 +64,6 @@ export function useScores() {
       const next = [...scores, scoreRecord];
       persist(next);
 
-      // Background sync
       appendScoreToSheet(scoreRecord).catch(handleSyncError);
 
       return scoreRecord;
@@ -98,7 +99,6 @@ export function useScores() {
       next[idx] = updated;
       persist(next);
 
-      // Background sync (full rewrite)
       syncScoresToSheet(next).catch(handleSyncError);
     },
     [scores],
@@ -112,7 +112,6 @@ export function useScores() {
       const updated = scores.filter((s) => s.id !== id);
       persist(updated);
 
-      // Background sync
       syncScoresToSheet(updated).catch(handleSyncError);
 
       return {
@@ -133,7 +132,6 @@ export function useScores() {
       const updated = scores.filter((s) => s.dogId !== dogId);
       persist(updated);
 
-      // Background sync
       syncScoresToSheet(updated).catch(handleSyncError);
 
       return {
@@ -152,7 +150,6 @@ export function useScores() {
     const prev = scores;
     persist([]);
 
-    // Background sync
     clearSheetScores().catch(handleSyncError);
 
     return {
@@ -163,9 +160,11 @@ export function useScores() {
     };
   }, [scores]);
 
-  const manualSync = useCallback(() => {
-    return syncScoresToSheet(scores);
-  }, [scores]);
+  const manualSync = useCallback(async () => {
+    const result = await processSyncQueue();
+    setPendingSyncs(getSyncQueue().length);
+    return result;
+  }, []);
 
   const setScoresWithUndo = useCallback(
     (newScores: Score[]) => {
@@ -202,5 +201,7 @@ export function useScores() {
     setSyncErrorHandler,
     getSortedScores,
     scoredDogIds,
+    hasPendingSyncs: pendingSyncs > 0,
+    syncQueueLength: pendingSyncs,
   };
 }

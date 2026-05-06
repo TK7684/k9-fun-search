@@ -1,4 +1,4 @@
-const SCORES_SHEET_URL =
+const DEFAULT_SCORES_URL =
   'https://script.google.com/macros/s/AKfycbwKW1W_CTQu1a2zrxZasX8sJHIotKIM0oj5pbp45BTzONnbPMwxV2-QfEbrHbsibO8GcQ/exec';
 
 export const onRequestOptions: PagesFunction = () =>
@@ -11,9 +11,10 @@ export const onRequestOptions: PagesFunction = () =>
   });
 
 export const onRequestPost: PagesFunction = async (ctx) => {
+  const scoresUrl = (ctx.env as Record<string, string>)?.APPS_SCRIPT_URL || DEFAULT_SCORES_URL;
   try {
     const body = await ctx.request.text();
-    const res = await fetch(SCORES_SHEET_URL, {
+    const res = await fetch(scoresUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body,
