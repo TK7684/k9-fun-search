@@ -1,14 +1,15 @@
-import { Component, type ErrorInfo, type ReactNode, useState } from 'react';
+import { Component, lazy, Suspense, type ErrorInfo, type ReactNode, useState } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import Header from './components/layout/Header';
 import DesktopNav from './components/layout/DesktopNav';
 import MobileNav from './components/layout/MobileNav';
-import RegisterTab from './components/registration/RegisterTab';
-import JudgeTab from './components/judge/JudgeTab';
-import Leaderboard from './components/leaderboard/Leaderboard';
-import SettingsPage from './components/settings/SettingsPage';
 import Toast from './components/shared/Toast';
 import Confetti from './components/shared/Confetti';
+
+const RegisterTab = lazy(() => import('./components/registration/RegisterTab'));
+const JudgeTab = lazy(() => import('./components/judge/JudgeTab'));
+const Leaderboard = lazy(() => import('./components/leaderboard/Leaderboard'));
+const SettingsPage = lazy(() => import('./components/settings/SettingsPage'));
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean; error: Error | null }> {
   constructor(props: { children: ReactNode }) {
@@ -56,10 +57,12 @@ function AppContent() {
         <Header />
         <DesktopNav />
         <main className="main-content">
-          {activeTab === 'register' && <RegisterTab />}
-          {activeTab === 'judge' && <JudgeTab />}
-          {activeTab === 'leaderboard' && <Leaderboard />}
-          {activeTab === 'settings' && <SettingsPage />}
+          <Suspense fallback={<div style={{ textAlign: 'center', padding: '2rem', color: '#888' }}>กำลังโหลด...</div>}>
+            {activeTab === 'register' && <RegisterTab />}
+            {activeTab === 'judge' && <JudgeTab />}
+            {activeTab === 'leaderboard' && <Leaderboard />}
+            {activeTab === 'settings' && <SettingsPage />}
+          </Suspense>
         </main>
         <MobileNav />
         <Toast />
