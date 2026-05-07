@@ -1,4 +1,11 @@
-import type { VPState, AttireState, BonusState, ScoreBreakdown, VPGrade } from '../types';
+import type { VPState, AttireState, BonusState, ScoreBreakdown, VPGrade, Score } from '../types';
+
+export function sortScores(scores: Score[]): Score[] {
+  return [...scores].sort((a, b) => {
+    if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+    return a.timeInSeconds - b.timeInSeconds;
+  });
+}
 
 // Fixed point lookup table from official scoring guide
 // [VP1 max 20, VP2 max 30, VP3 max 40]

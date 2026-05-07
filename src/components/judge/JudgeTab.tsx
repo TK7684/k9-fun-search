@@ -120,6 +120,12 @@ export default function JudgeTab() {
       return;
     }
 
+    const anyVpFound = vpState[1].found || vpState[2].found || vpState[3].found;
+    if (!anyVpFound) {
+      showToast('ต้องบันทึกผล VP อย่างน้อย 1 จุด', 'error');
+      return;
+    }
+
     saveScore(dog, vpState, attireState, bonusState, timer.seconds, notes);
 
     showToast('บันทึกคะแนนสำเร็จ! 🎉', 'success');

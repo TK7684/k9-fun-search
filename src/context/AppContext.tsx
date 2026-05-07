@@ -141,9 +141,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     editingScoreId,
     setEditingScoreId,
 
-    // Sync status — wired after sync-engine merge
-    hasPendingSyncs: false,
-    syncQueueLength: 0,
+    // Sync status
+    hasPendingSyncs: scoresApi.hasPendingSyncs,
+    syncQueueLength: scoresApi.syncQueueLength,
     offlineMode: false,
   };
 

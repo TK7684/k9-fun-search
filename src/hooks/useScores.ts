@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useRef } from 'react';
 import type { Score, VPState, AttireState, BonusState, MergedDog, VPDetail } from '../types';
-import { calculateLiveScore, getGradeVpPoints } from '../utils/scoring';
+import { calculateLiveScore, getGradeVpPoints, sortScores } from '../utils/scoring';
 import { safeParse, saveToStorage, getSyncQueue } from '../utils/storage';
 import { appendScoreToSheet, syncScoresToSheet, clearSheetScores, processSyncQueue } from '../utils/sheetSync';
 
@@ -175,14 +175,7 @@ export function useScores() {
     [scores],
   );
 
-  const getSortedScores = useCallback(
-    () =>
-      [...scores].sort((a, b) => {
-        if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
-        return a.timeInSeconds - b.timeInSeconds;
-      }),
-    [scores],
-  );
+  const getSortedScores = useCallback(() => sortScores(scores), [scores]);
 
   const scoredDogIds = useMemo(
     () => new Set(scores.map((s) => s.dogId)),

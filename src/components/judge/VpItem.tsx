@@ -53,6 +53,7 @@ export default function VpItem({
             type="checkbox"
             checked={found}
             onChange={(e) => onFoundChange(e.target.checked)}
+            aria-label={`VP${vpNum} ${found ? 'พบแล้ว' : 'ยังไม่พบ'}`}
           />
           <span className="toggle-slider" />
           พบแล้ว
@@ -61,6 +62,7 @@ export default function VpItem({
           className="grade-select"
           value={grade}
           onChange={(e) => onGradeChange(e.target.value as VPGrade | '')}
+          aria-label={`VP${vpNum} เกรด`}
         >
           {GRADE_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
