@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import type { MergedDog } from '../types';
 import { useDogs } from '../hooks/useDogs';
 import { useScores } from '../hooks/useScores';
@@ -70,9 +70,21 @@ export interface AppContextType {
   hasPendingSyncs: boolean;
   syncQueueLength: number;
   offlineMode: boolean;
+
+  // Confetti celebration
+  triggerConfetti: () => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
+
+// Global ref so AppContent can register a confetti trigger
+export const confettiTriggerRef: React.MutableRefObject<(() => void) | null> = { current: null };
+
+export function useConfettiTrigger() {
+  return useCallback(() => {
+    confettiTriggerRef.current?.();
+  }, []);
+}
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const dogsApi = useDogs();
@@ -87,6 +99,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const [activeTab, setActiveTab] = useState<ActiveTab>('register');
   const [editingScoreId, setEditingScoreId] = useState<number | null>(null);
+
+  const triggerConfetti = useCallback(() => {
+    confettiTriggerRef.current?.();
+  }, []);
 
   const value: AppContextType = {
     // Dogs
@@ -144,7 +160,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     // Sync status
     hasPendingSyncs: scoresApi.hasPendingSyncs,
     syncQueueLength: scoresApi.syncQueueLength,
-    offlineMode: false,
+    offlineMode: sheetApi.offlineMode,
+
+    // Confetti
+    triggerConfetti,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

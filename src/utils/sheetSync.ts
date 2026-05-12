@@ -82,12 +82,20 @@ export async function clearSheetScores(): Promise<void> {
   }
 }
 
+const MAX_QUEUE_RETRIES = 10;
+
 export async function processSyncQueue(): Promise<{ processed: number; failed: number }> {
   const queue = getSyncQueue();
   let processed = 0;
   let failed = 0;
 
   for (const entry of queue) {
+    // Skip entries that have exceeded max retries
+    if (entry.retryCount >= MAX_QUEUE_RETRIES) {
+      removeFromSyncQueue(entry.id);
+      failed++;
+      continue;
+    }
     try {
       await postToSheetWithRetry(entry.payload as object);
       removeFromSyncQueue(entry.id);

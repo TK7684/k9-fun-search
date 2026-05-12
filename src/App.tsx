@@ -1,10 +1,13 @@
-import { Component, lazy, Suspense, type ErrorInfo, type ReactNode, useState } from 'react';
+import { Component, lazy, Suspense, type ErrorInfo, type ReactNode, useState, useEffect } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
 import Header from './components/layout/Header';
 import DesktopNav from './components/layout/DesktopNav';
 import MobileNav from './components/layout/MobileNav';
 import Toast from './components/shared/Toast';
 import Confetti from './components/shared/Confetti';
+
+// Access the confetti ref from AppContext module
+import { confettiTriggerRef } from './context/AppContext';
 
 const RegisterTab = lazy(() => import('./components/registration/RegisterTab'));
 const JudgeTab = lazy(() => import('./components/judge/JudgeTab'));
@@ -49,6 +52,12 @@ function AppContent() {
   const { activeTab } = useApp();
 
   const [confettiTrigger, setConfettiTrigger] = useState(false);
+
+  // Register the confetti trigger so context consumers can fire it
+  useEffect(() => {
+    confettiTriggerRef.current = () => setConfettiTrigger(true);
+    return () => { confettiTriggerRef.current = null; };
+  }, []);
 
   return (
     <>

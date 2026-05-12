@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { LOGO_URL } from '../../utils/constants';
 
 export default function Infographic() {
   const [isOpen, setIsOpen] = useState(false);
+  const [logoFailed, setLogoFailed] = useState(false);
+
+  const handleLogoError = useCallback(() => setLogoFailed(true), []);
 
   return (
     <div className={`infographic-section${isOpen ? ' open' : ''}`}>
@@ -14,7 +17,8 @@ export default function Infographic() {
       <div className="infographic-content">
         {/* Banner */}
         <div className="info-banner">
-          <img src={LOGO_URL} alt="United SAR K9" className="info-logo" />
+          {!logoFailed && <img src={LOGO_URL} alt="United SAR K9" className="info-logo" onError={handleLogoError} />}
+          {logoFailed && <span className="info-logo-fallback" aria-hidden="true">🐕</span>}
           <div className="info-title-block">
             <h2>Fun Search by UNITED SAR K9</h2>
             <p className="info-subtitle">Thailand Working Dog Championship (TWD 2026)</p>

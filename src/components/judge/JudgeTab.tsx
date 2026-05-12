@@ -33,7 +33,7 @@ const INITIAL_BONUS_STATE: BonusState = {
 };
 
 export default function JudgeTab() {
-  const { mergedDogs, timer, saveScore, showToast, scoredDogIds } = useApp();
+  const { mergedDogs, timer, saveScore, showToast, scoredDogIds, triggerConfetti } = useApp();
 
   const [selectedDogId, setSelectedDogId] = useState<string>('');
   const [vpState, setVpState] = useState<VPState>({ ...INITIAL_VP_STATE });
@@ -129,6 +129,7 @@ export default function JudgeTab() {
     saveScore(dog, vpState, attireState, bonusState, timer.seconds, notes);
 
     showToast('บันทึกคะแนนสำเร็จ! 🎉', 'success');
+    triggerConfetti();
     handleCancel();
   }
 
